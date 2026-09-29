@@ -1,143 +1,255 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    tools:context=".MainActivity">
+    android:background="#0F0F14"
+    android:orientation="vertical">
 
-    <!-- 1. HEADER (Title and Menu) -->
-    <LinearLayout
-        android:id="@+id/headerLayout"
+    <!-- Header / Üst Başlık -->
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        android:padding="16dp">
 
         <TextView
-            android:id="@+id/tvBaslik"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:fontFamily="sans-serif-bold"
             android:text="Subscription Tracker"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:textColor="?attr/colorOnBackground" />
+            android:textColor="#F0F0F5"
+            android:textSize="22sp" />
 
         <ImageButton
             android:id="@+id/btnMenu"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Menu"
-            android:src="@android:drawable/ic_menu_manage"
-            app:tint="?attr/colorOnBackground" />
-    </LinearLayout>
+            android:contentDescription="Add Subscription"
+            android:src="@android:drawable/ic_input_add"
+            app:tint="#F0F0F5" />
+    </RelativeLayout>
 
-    <!-- 2. FINANCIAL SUMMARY CARD -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cardOzet"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="4dp"
-        app:strokeWidth="1dp"
-        app:strokeColor="#2C2C2E"
-        app:cardBackgroundColor="#1E1E24"
-        app:layout_constraintTop_toBottomOf="@id/headerLayout"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp">
+            android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Monthly Total"
-                android:textSize="14sp"
-                android:textColor="#A0A0A0" />
-
-            <TextView
-                android:id="@+id/tvAylikToplam"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="₺0,00"
-                android:textSize="28sp"
-                android:textStyle="bold"
-                android:textColor="#D0BCFF" />
-
-            <View
+            <!-- Özet Kartı -->
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="12dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="12dp"
                 android:layout_marginBottom="12dp"
-                android:background="#2C2C2E" />
+                app:cardBackgroundColor="#16161E"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:strokeColor="#2D2D3F"
+                app:strokeWidth="1dp">
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif"
+                        android:text="Monthly Total"
+                        android:textColor="#A0A0B5"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/tvAylikToplam"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="sans-serif-bold"
+                        android:text="$0.00"
+                        android:textColor="#F0F0F5"
+                        android:textSize="28sp" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginVertical="12dp"
+                        android:background="#2D2D3F" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/tvToplamAbonelik"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif"
+                            android:text="0 Active Subscriptions"
+                            android:textColor="#A0A0B5"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/tvYaklasanOdeme"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:fontFamily="sans-serif"
+                            android:text="Next: -"
+                            android:textColor="#A0A0B5"
+                            android:textSize="13sp" />
+                    </RelativeLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ARAMA VE SIRALAMA ALANI -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginHorizontal="12dp"
+                android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/tvToplamAbonelik"
+                <!-- Arama Kutusu -->
+                <EditText
+                    android:id="@+id/etSearch"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="42dp"
                     android:layout_weight="1"
-                    android:text="0 Active Subscriptions"
-                    android:textSize="13sp"
-                    android:textColor="#C4C6CF" />
+                    android:background="@drawable/bg_search_input"
+                    android:drawableStart="@android:drawable/ic_menu_search"
+                    android:drawablePadding="8dp"
+                    android:hint="Search subscription..."
+                    android:inputType="text"
+                    android:paddingHorizontal="12dp"
+                    android:textColor="#F0F0F5"
+                    android:textColorHint="#6E6E8A"
+                    android:textSize="14sp" />
 
-                <TextView
-                    android:id="@+id/tvYaklasanOdeme"
+                <!-- Sıralama Butonu -->
+                <ImageButton
+                    android:id="@+id/btnSort"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_search_input"
+                    android:contentDescription="Sort"
+                    android:src="@android:drawable/ic_menu_sort_by_size"
+                    app:tint="#F0F0F5" />
+            </LinearLayout>
+
+            <!-- KATEGORİ CHIP'LERİ (Yatay Kaydırılabilir) -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="12dp"
+                android:paddingHorizontal="12dp"
+                android:scrollbars="none">
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroupCategory"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Next: -"
-                    android:textSize="13sp"
-                    android:textColor="#C4C6CF" />
-            </LinearLayout>
+                    app:singleLine="true"
+                    app:singleSelection="true">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipAll"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="All"
+                        android:textColor="#F0F0F5"
+                        app:chipBackgroundColor="#16161E"
+                        app:chipStrokeColor="#2D2D3F"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipMusic"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Music"
+                        android:textColor="#F0F0F5"
+                        app:chipBackgroundColor="#16161E"
+                        app:chipStrokeColor="#2D2D3F"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipMovies"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Movies &amp; TV"
+                        android:textColor="#F0F0F5"
+                        app:chipBackgroundColor="#16161E"
+                        app:chipStrokeColor="#2D2D3F"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipSoftware"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Software &amp; Cloud"
+                        android:textColor="#F0F0F5"
+                        app:chipBackgroundColor="#16161E"
+                        app:chipStrokeColor="#2D2D3F"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipGaming"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Gaming"
+                        android:textColor="#F0F0F5"
+                        app:chipBackgroundColor="#16161E"
+                        app:chipStrokeColor="#2D2D3F"
+                        app:chipStrokeWidth="1dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipOther"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Other"
+                        android:textColor="#F0F0F5"
+                        app:chipBackgroundColor="#16161E"
+                        app:chipStrokeColor="#2D2D3F"
+                        app:chipStrokeWidth="1dp" />
+                </com.google.android.material.chip.ChipGroup>
+            </HorizontalScrollView>
+
+            <!-- Abonelik Listesi -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvAbonelikler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false" />
+
         </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
+    </ScrollView>
 
-    <!-- 3. SUBSCRIPTION LIST -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvAbonelikler"
+    <!-- Bottom Navigation -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationView"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        android:clipToPadding="false"
-        app:layout_constraintTop_toBottomOf="@id/cardOzet"
-        app:layout_constraintBottom_toTopOf="@id/btnEkle"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:listitem="@android:layout/simple_list_item_2" />
+        android:layout_height="wrap_content"
+        android:background="#16161E"
+        app:itemIconTint="#A0A0B5"
+        app:itemTextColor="#A0A0B5"
+        app:menu="@menu/bottom_nav_menu" />
 
-    <!-- 4. ADD SUBSCRIPTION BUTTON -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnEkle"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:text="Add Subscription"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:textAllCaps="false"
-        app:cornerRadius="28dp"
-        app:backgroundTint="#D0BCFF"
-        android:textColor="#381E72"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>
