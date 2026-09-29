@@ -26,7 +26,7 @@ Follow these steps to set up and run the project locally:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com
+   git clone https://github.com](https://github.com/EmirKerem33/Subscription-Tracker.git
    ```
 2. Open the project in **Android Studio**.
 3. Sync the project with Gradle files and deploy to an emulator or physical device.
