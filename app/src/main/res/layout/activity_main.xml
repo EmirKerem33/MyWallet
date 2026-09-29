@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".MainActivity">
+
+    <!-- 1. HEADER (Title and Menu) -->
+    <LinearLayout
+        android:id="@+id/headerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:id="@+id/tvBaslik"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Subscription Tracker"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="?attr/colorOnBackground" />
+
+        <ImageButton
+            android:id="@+id/btnMenu"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Menu"
+            android:src="@android:drawable/ic_menu_manage"
+            app:tint="?attr/colorOnBackground" />
+    </LinearLayout>
+
+    <!-- 2. FINANCIAL SUMMARY CARD -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardOzet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
+        app:strokeWidth="1dp"
+        app:strokeColor="#2C2C2E"
+        app:cardBackgroundColor="#1E1E24"
+        app:layout_constraintTop_toBottomOf="@id/headerLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Monthly Total"
+                android:textSize="14sp"
+                android:textColor="#A0A0A0" />
+
+            <TextView
+                android:id="@+id/tvAylikToplam"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="₺0,00"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:textColor="#D0BCFF" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:background="#2C2C2E" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvToplamAbonelik"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="0 Active Subscriptions"
+                    android:textSize="13sp"
+                    android:textColor="#C4C6CF" />
+
+                <TextView
+                    android:id="@+id/tvYaklasanOdeme"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Next: -"
+                    android:textSize="13sp"
+                    android:textColor="#C4C6CF" />
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- 3. SUBSCRIPTION LIST -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvAbonelikler"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:clipToPadding="false"
+        app:layout_constraintTop_toBottomOf="@id/cardOzet"
+        app:layout_constraintBottom_toTopOf="@id/btnEkle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:listitem="@android:layout/simple_list_item_2" />
+
+    <!-- 4. ADD SUBSCRIPTION BUTTON -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnEkle"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="Add Subscription"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textAllCaps="false"
+        app:cornerRadius="28dp"
+        app:backgroundTint="#D0BCFF"
+        android:textColor="#381E72"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
