@@ -30,3 +30,10 @@ Follow these steps to set up and run the project locally:
    ```
 2. Open the project in **Android Studio**.
 3. Sync the project with Gradle files and deploy to an emulator or physical device.
+
+## Downloading APK
+
+1. Go to the Releases section of the repository.
+2. Select the version you want to download.
+3. Download the APK file.
+4. Install it on your Android device.
