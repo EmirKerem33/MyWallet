@@ -24,6 +24,9 @@ public interface AboneDao {
     @Query("SELECT * FROM Subscription")
     List<Abonelik> tumunuGetir();
 
+    @Query("DELETE FROM Subscription")
+    void tumunuSil();
+
 
 
 }

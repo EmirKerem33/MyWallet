@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -45,13 +46,17 @@ public class AboneAdapter extends RecyclerView.Adapter<AboneAdapter.AboneViewHol
         Abonelik subscription = subscriptionList.get(position);
         holder.tvIsim.setText(subscription.getName());
 
-        // Display as "Amount - Date (Billing Cycle)" in the list
+        // Dinamik Para Birimi Okuma
+        String currency = (subscription.getCurrency() != null && !subscription.getCurrency().isEmpty())
+                ? subscription.getCurrency() : "₺";
+
+        // "Para Birimi + Tutar - Tarih (Periyot)" formatı
         String cycleStr = (subscription.getBillingCycle() != null && !subscription.getBillingCycle().isEmpty())
                 ? " (" + subscription.getBillingCycle() + ")" : "";
-        String detailText = "$" + subscription.getAmount() + " - " + subscription.getDate() + cycleStr;
+        String detailText = currency + subscription.getAmount() + " - " + subscription.getDate() + cycleStr;
         holder.tvTutar.setText(detailText);
 
-        // Click to open detail dialog
+        // Tıklayınca açılan detay diyaloğu
         holder.itemView.setOnClickListener(v -> {
             String notesDisplay = (subscription.getNotes() == null || subscription.getNotes().isEmpty()) ? "-" : subscription.getNotes();
             String cycleDisplay = (subscription.getBillingCycle() == null || subscription.getBillingCycle().isEmpty()) ? "-" : subscription.getBillingCycle();
@@ -59,7 +64,7 @@ public class AboneAdapter extends RecyclerView.Adapter<AboneAdapter.AboneViewHol
             new AlertDialog.Builder(v.getContext())
                     .setTitle(subscription.getName())
                     .setMessage(
-                            "Amount: $" + subscription.getAmount() + "\n" +
+                            "Amount: " + currency + subscription.getAmount() + "\n" +
                                     "Date: " + subscription.getDate() + "\n" +
                                     "Category: " + subscription.getCategory() + "\n" +
                                     "Billing Cycle: " + cycleDisplay + "\n" +
@@ -72,7 +77,7 @@ public class AboneAdapter extends RecyclerView.Adapter<AboneAdapter.AboneViewHol
                     .show();
         });
 
-        // Long click to delete
+        // Uzun basarak silme diyaloğu
         holder.itemView.setOnLongClickListener(v -> {
             new AlertDialog.Builder(v.getContext())
                     .setTitle("Delete Subscription")
@@ -86,7 +91,6 @@ public class AboneAdapter extends RecyclerView.Adapter<AboneAdapter.AboneViewHol
                                     subscriptionList.remove(positionToRemove);
                                     notifyItemRemoved(positionToRemove);
 
-                                    // Refresh summary card on main screen after deletion
                                     if (onDataChangedListener != null) {
                                         onDataChangedListener.run();
                                     }
@@ -101,9 +105,11 @@ public class AboneAdapter extends RecyclerView.Adapter<AboneAdapter.AboneViewHol
     }
 
     private void openEditForm(Context context, Abonelik subscription, int position) {
+        ScrollView scrollView = new ScrollView(context);
         LinearLayout dialogLayout = new LinearLayout(context);
         dialogLayout.setOrientation(LinearLayout.VERTICAL);
         dialogLayout.setPadding(50, 40, 50, 10);
+        scrollView.addView(dialogLayout);
 
         EditText etName = new EditText(context);
         etName.setHint("Subscription Name");
@@ -115,7 +121,25 @@ public class AboneAdapter extends RecyclerView.Adapter<AboneAdapter.AboneViewHol
         etAmount.setText(subscription.getAmount());
         dialogLayout.addView(etAmount);
 
-        // Date Field
+        // Para Birimi Alanı (Seçilebilir ve Düzenlenebilir)
+        EditText etCurrency = new EditText(context);
+        etCurrency.setHint("Select Currency");
+        String currentCurrency = (subscription.getCurrency() != null && !subscription.getCurrency().isEmpty())
+                ? subscription.getCurrency() : "₺";
+        etCurrency.setText(currentCurrency);
+        etCurrency.setFocusable(false);
+        etCurrency.setClickable(true);
+
+        String[] currencyOptions = {"₺", "$", "€", "£"};
+        etCurrency.setOnClickListener(v -> {
+            new AlertDialog.Builder(context)
+                    .setTitle("Select Currency")
+                    .setItems(currencyOptions, (dialog, which) -> etCurrency.setText(currencyOptions[which]))
+                    .show();
+        });
+        dialogLayout.addView(etCurrency);
+
+        // Tarih Seçimi
         EditText etDate = new EditText(context);
         etDate.setHint("Select Date");
         etDate.setText(subscription.getDate());
@@ -139,7 +163,7 @@ public class AboneAdapter extends RecyclerView.Adapter<AboneAdapter.AboneViewHol
         });
         dialogLayout.addView(etDate);
 
-        // Category Field
+        // Kategori Seçimi
         EditText etCategory = new EditText(context);
         etCategory.setHint("Select Category");
         etCategory.setText(subscription.getCategory());
@@ -166,7 +190,7 @@ public class AboneAdapter extends RecyclerView.Adapter<AboneAdapter.AboneViewHol
         });
         dialogLayout.addView(etCategory);
 
-        // Billing Cycle Field
+        // Ödeme Periyodu Seçimi
         EditText etBillingCycle = new EditText(context);
         etBillingCycle.setHint("Select Billing Cycle");
         etBillingCycle.setText(subscription.getBillingCycle());
@@ -192,10 +216,11 @@ public class AboneAdapter extends RecyclerView.Adapter<AboneAdapter.AboneViewHol
 
         new AlertDialog.Builder(context)
                 .setTitle("Edit Subscription")
-                .setView(dialogLayout)
+                .setView(scrollView)
                 .setPositiveButton("Save", (dialog, which) -> {
                     subscription.setName(etName.getText().toString());
                     subscription.setAmount(etAmount.getText().toString());
+                    subscription.setCurrency(etCurrency.getText().toString());
                     subscription.setDate(etDate.getText().toString());
                     subscription.setCategory(etCategory.getText().toString());
                     subscription.setBillingCycle(etBillingCycle.getText().toString());
@@ -206,7 +231,6 @@ public class AboneAdapter extends RecyclerView.Adapter<AboneAdapter.AboneViewHol
                         ((Activity) context).runOnUiThread(() -> {
                             notifyItemChanged(position);
 
-                            // Refresh summary card on main screen after edit
                             if (onDataChangedListener != null) {
                                 onDataChangedListener.run();
                             }

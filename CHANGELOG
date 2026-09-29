@@ -1,0 +1,22 @@
+📄 Changelog - 2026-09-29
+Added
+• Bottom Navigation Architecture: Implemented a modern 4-tab layout switching between Subscriptions, Income & Outcome, Analytics, and Settings.
+• Transaction Ledger (Income & Outcome): Integrated a unified, chronological account statement view combining incomes and recurring subscription expenses.
+• Dynamic Indicators: Implemented color-coded indicators for transactions: green (#4CD964) with a + sign for income, and red (#FF5252) with a - sign for expenses.
+• Net Balance Calculator: Added a dashboard panel displaying real-time net budget calculated from total income and expenses.
+• Multi-Dimensional Filtering: Introduced advanced filtering by category, date range, amount range (Min-Max), and transaction type.
+• Reactive Multi-Currency Support: Full compatibility with ₺, $, €, and £, instantly reflecting currency changes throughout the app.
+• Budget Limits & Alerts: Added a monthly expense limit feature with automated system warnings when thresholds are approached or exceeded.
+• Scheduled Notifications: Enhanced AlarmManager and background worker configurations to support customizable notification times for upcoming renewals.
+• Android 13+ Runtime Permissions: Implemented POST_NOTIFICATIONS runtime permission handling with dynamic fallback logic for denied states.
+• Biometric Authentication: Secured sensitive financial data using native BiometricPrompt (fingerprint/face recognition) lock mechanisms.
+• In-App Feedback Module: Added an interactive user feedback and bug reporting flow.
+• Financial Analytics: Integrated MPAndroidChart to visualize expense distribution across categories via a dynamic PieChart.
+Changed
+• Upgraded the legacy single-income screen into a unified transaction ledger (IncomeActivity).
+• Refactored the storage layer into a dual-entity Room DB schema, managed asynchronously via ExecutorService.
+• Refined UI components and chart color palettes to strictly comply with modern Dark Mode standards.
+Fixed
+• Resolved Main Thread blocking and prevented Potential ANR (App Not Responding) errors by optimizing asynchronous operations.
+• Fixed runtime crashes related to amount parsing by implementing a strict parseSafeAmount formatting algorithm.
+• Optimized tab-switching lifecycle loops using proper Intent flags (FLAG_ACTIVITY_CLEAR_TOP).

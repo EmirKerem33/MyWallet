@@ -2,9 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <!-- Sağ üst köşede kalacak Artı (+) Butonu -->
     <item
-        android:id="@+id/action_about"
-        android:title="About"
-        app:showAsAction="never" />
+        android:id="@+id/action_add"
+        android:icon="@android:drawable/ic_menu_add"
+        android:title="Add Subscription"
+        app:showAsAction="ifRoom" />
 
 </menu>
