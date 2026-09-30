@@ -26,6 +26,14 @@ Subscription Tracker is an open-source Android application designed to track and
 * **Concurrency:** Java ExecutorService
 * **Background Services:** AlarmManager, BroadcastReceiver
 
+## Changelog - v2.1.0
+
+This release introduces significant enhancements to financial management capabilities. We've added comprehensive payment method tagging with support for credit card, debit card, cash, and bank transfer badges for both subscriptions and one-off expenses. Real-time currency exchange rate integration via CurrencyExchangeManager provides live rate fetching with fallback offline caching capabilities. A new in-app currency converter utility is now available in Settings for quick conversions. The One-off Expenses module features a dedicated Expenses tab in the bottom navigation for seamless tracking of single transactions and transfers. Analytics have been enriched with a statistical bar chart powered by MPAndroidChart, enabling intuitive Income vs Expense comparisons, alongside smart financial insights offering yearly expense projections and budget analytics. Users can now create and select custom categories dynamically, while brand logos and favicons are displayed through integrated Google Favicon API and local vector brand icons for popular subscription services. Background notifications have been configured using periodic WorkManager for automated payment reminders.
+
+On the technical side, multi-currency normalization has been upgraded across analytics and financial summaries to automatically convert all currencies (USD, EUR, GBP) to the default currency using live exchange rates. Selection dialogs throughout the application have been refined to use radio buttons that clearly display current selections. The theme architecture has been comprehensively refactored to support dynamic Light and Dark modes utilizing Material DayNight color attributes for a more flexible user experience.
+
+Bug fixes in this release resolve the application exit issue that occurred when navigating back from the Settings activity. Additionally, the "Reset All Data" functionality has been expanded to completely wipe subscriptions, incomes, expenses, and app preferences, ensuring thorough data cleanup when needed.
+
 ## Getting Started
 
 Follow these steps to set up and run the project locally:
