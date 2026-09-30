@@ -1,11 +1,13 @@
 package com.example.subscriptiontracker;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -28,6 +30,9 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.chip.Chip;
@@ -36,6 +41,7 @@ import com.google.android.material.chip.ChipGroup;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -44,6 +50,7 @@ import java.util.Locale;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -209,20 +216,10 @@ public class MainActivity extends AppCompatActivity {
 
         if (fromCurrency.equals(toCurrency)) return amount;
 
-        double fromRate = getRateToTRY(fromCurrency);
-        double toRate = getRateToTRY(toCurrency);
+        double fromRate = CurrencyExchangeManager.getRateToTRY(this, fromCurrency);
+        double toRate = CurrencyExchangeManager.getRateToTRY(this, toCurrency);
 
         return (amount * fromRate) / toRate;
-    }
-
-    private double getRateToTRY(String currency) {
-        if (currency == null) return 1.0;
-        switch (currency.trim()) {
-            case "$": case "USD": return 34.0;
-            case "€": case "EUR": return 37.5;
-            case "£": case "GBP": return 44.5;
-            default: return 1.0;
-        }
     }
 
     private void setupBottomNav() {
@@ -238,6 +235,10 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(new Intent(MainActivity.this, IncomeActivity.class));
                     finish();
                     return true;
+                } else if (id == R.id.nav_expenses) {
+                    startActivity(new Intent(MainActivity.this, ExpenseActivity.class));
+                    finish();
+                    return true;
                 } else if (id == R.id.nav_analytics) {
                     // Analiz sayfasına geçiş
                     startActivity(new Intent(MainActivity.this, AnalyticsActivity.class));
@@ -245,7 +246,6 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 } else if (id == R.id.nav_settings) {
                     startActivity(new Intent(MainActivity.this, SettingsActivity.class));
-                    finish();
                     return true;
                 }
                 return false;
@@ -256,13 +256,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        SharedPreferences prefs = getSharedPreferences("AppSettings", Context.MODE_PRIVATE);
+        int themeMode = prefs.getInt(SettingsActivity.KEY_THEME_MODE, 0);
+        SettingsActivity.applyTheme(themeMode);
+
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
         db = AboneDatabase.getInstance(this);
 
         View mainView = findViewById(R.id.main);
-        SharedPreferences prefs = getSharedPreferences("AppSettings", Context.MODE_PRIVATE);
         boolean isLockEnabled = prefs.getBoolean(SettingsActivity.KEY_APP_LOCK_ENABLED, false);
 
         if (isLockEnabled) {
@@ -278,6 +282,16 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        PeriodicWorkRequest workRequest = new PeriodicWorkRequest.Builder(
+                NotificationWorker.class,
+                24, TimeUnit.HOURS
+        ).build();
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+                "SubscriptionReminderWork",
+                ExistingPeriodicWorkPolicy.KEEP,
+                workRequest
+        );
 
         rvAbonelikler = findViewById(R.id.rvAbonelikler);
         etSearch = findViewById(R.id.etSearch);
@@ -322,41 +336,15 @@ public class MainActivity extends AppCompatActivity {
             btnMenu.setOnClickListener(v -> showAddSubscriptionDialog());
         }
 
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
-        if (bottomNavigationView != null) {
-            bottomNavigationView.setSelectedItemId(R.id.nav_subscriptions); // Ana ekrandayız
+        setupBottomNav();
 
-            bottomNavigationView.setOnItemSelectedListener(item -> {
-                int id = item.getItemId();
-                if (id == R.id.nav_subscriptions) {
-                    return true; // Zaten Ana ekrandayız
-                } else if (id == R.id.nav_income) {
-                    // Gelir sayfasına git
-                    startActivity(new Intent(MainActivity.this, IncomeActivity.class));
-                    finish();
-                    return true;
-                } else if (id == R.id.nav_analytics) {
-                    // Analiz ve Pasta Grafiği sayfasına git
-                    startActivity(new Intent(MainActivity.this, AnalyticsActivity.class));
-                    finish();
-                    return true;
-                } else if (id == R.id.nav_settings) {
-                    // Ayarlar sayfasına git
-                    startActivity(new Intent(MainActivity.this, SettingsActivity.class));
-                    finish();
-                    return true;
-                }
-                return false;
-            });
-        }
-
-        // Adapter'ı filtrelenmiş liste (`filteredList`) ile bağlıyoruz
+        // Adapter'ı filtrelenmiş liste (`filteredList`) ile bağla
         adapter = new AboneAdapter(filteredList, db, executor, this::loadData);
         rvAbonelikler.setAdapter(adapter);
         rvAbonelikler.setLayoutManager(new LinearLayoutManager(this));
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-            requestPermissions(new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 101);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
         }
     }
 
@@ -369,12 +357,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         SharedPreferences sharedPreferences = getSharedPreferences("AppSettings", MODE_PRIVATE);
-        boolean isDarkMode = sharedPreferences.getBoolean("dark_mode", false);
-        if (isDarkMode) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        }
+        int themeMode = sharedPreferences.getInt(SettingsActivity.KEY_THEME_MODE, 0);
+        SettingsActivity.applyTheme(themeMode);
+
+        CurrencyExchangeManager.fetchLatestRates(this, null);
+        loadData();
     }
 
     private void showAddSubscriptionDialog() {
@@ -403,9 +390,20 @@ public class MainActivity extends AppCompatActivity {
 
         String[] currencyOptions = {"₺", "$", "€", "£"};
         etCurrency.setOnClickListener(view -> {
+            String currentCurrency = etCurrency.getText().toString();
+            int selectedIndex = 0;
+            for (int i = 0; i < currencyOptions.length; i++) {
+                if (currencyOptions[i].equalsIgnoreCase(currentCurrency)) {
+                    selectedIndex = i;
+                    break;
+                }
+            }
             new AlertDialog.Builder(MainActivity.this)
                     .setTitle("Select Currency")
-                    .setItems(currencyOptions, (dialog, which) -> etCurrency.setText(currencyOptions[which]))
+                    .setSingleChoiceItems(currencyOptions, selectedIndex, (dialog, which) -> {
+                        etCurrency.setText(currencyOptions[which]);
+                        dialog.dismiss();
+                    })
                     .show();
         });
         dialogLayout.addView(etCurrency);
@@ -440,9 +438,20 @@ public class MainActivity extends AppCompatActivity {
 
         String[] cycleOptions = {"7 Days", "14 Days", "1 Month", "3 Months", "6 Months", "Yearly"};
         etBillingCycle.setOnClickListener(view -> {
+            String currentCycle = etBillingCycle.getText().toString();
+            int selectedIndex = 2; // Default 1 Month
+            for (int i = 0; i < cycleOptions.length; i++) {
+                if (cycleOptions[i].equalsIgnoreCase(currentCycle)) {
+                    selectedIndex = i;
+                    break;
+                }
+            }
             new AlertDialog.Builder(MainActivity.this)
                     .setTitle("Select Billing Cycle")
-                    .setItems(cycleOptions, (dialog, which) -> etBillingCycle.setText(cycleOptions[which]))
+                    .setSingleChoiceItems(cycleOptions, selectedIndex, (dialog, which) -> {
+                        etBillingCycle.setText(cycleOptions[which]);
+                        dialog.dismiss();
+                    })
                     .show();
         });
         dialogLayout.addView(etBillingCycle);
@@ -452,18 +461,72 @@ public class MainActivity extends AppCompatActivity {
         etCategory.setFocusable(false);
         etCategory.setClickable(true);
 
-        String[] categoryOptions = {
+        List<String> categoryList = new ArrayList<>(Arrays.asList(
                 "Music", "Movies & TV", "Software & Cloud", "Gaming",
-                "Education & Books", "Sports & Fitness", "Other"
-        };
+                "Education & Books", "Sports & Fitness", "Other", "➕ Add Custom Category..."
+        ));
 
         etCategory.setOnClickListener(view -> {
+            String[] categoryOptions = categoryList.toArray(new String[0]);
+            String currentCat = etCategory.getText().toString();
+            int selectedIndex = 0;
+            for (int i = 0; i < categoryOptions.length; i++) {
+                if (categoryOptions[i].equalsIgnoreCase(currentCat)) {
+                    selectedIndex = i;
+                    break;
+                }
+            }
             new AlertDialog.Builder(MainActivity.this)
                     .setTitle("Select Category")
-                    .setItems(categoryOptions, (dialog, which) -> etCategory.setText(categoryOptions[which]))
+                    .setItems(categoryOptions, (dialog, which) -> {
+                        if (which == categoryOptions.length - 1 && categoryOptions[which].equals("➕ Add Custom Category...")) {
+                            EditText customInput = new EditText(MainActivity.this);
+                            customInput.setHint("Enter custom category name");
+                            new AlertDialog.Builder(MainActivity.this)
+                                    .setTitle("Add Custom Category")
+                                    .setView(customInput)
+                                    .setPositiveButton("Add", (d, w) -> {
+                                        String newCat = customInput.getText().toString().trim();
+                                        if (!newCat.isEmpty()) {
+                                            categoryList.add(categoryList.size() - 1, newCat);
+                                            etCategory.setText(newCat);
+                                        }
+                                    })
+                                    .setNegativeButton("Cancel", null)
+                                    .show();
+                        } else {
+                            etCategory.setText(categoryOptions[which]);
+                        }
+                    })
                     .show();
         });
         dialogLayout.addView(etCategory);
+
+        EditText etPaymentMethod = new EditText(MainActivity.this);
+        etPaymentMethod.setHint("Select Payment Method (Tap to select)");
+        etPaymentMethod.setText("Credit Card");
+        etPaymentMethod.setFocusable(false);
+        etPaymentMethod.setClickable(true);
+
+        String[] paymentOptions = {"Credit Card", "Debit Card", "Virtual Card", "Cash", "Bank Transfer"};
+        etPaymentMethod.setOnClickListener(view -> {
+            String currentPm = etPaymentMethod.getText().toString();
+            int selectedIndex = 0;
+            for (int i = 0; i < paymentOptions.length; i++) {
+                if (paymentOptions[i].equalsIgnoreCase(currentPm)) {
+                    selectedIndex = i;
+                    break;
+                }
+            }
+            new AlertDialog.Builder(MainActivity.this)
+                    .setTitle("Select Payment Method")
+                    .setSingleChoiceItems(paymentOptions, selectedIndex, (dialog, which) -> {
+                        etPaymentMethod.setText(paymentOptions[which]);
+                        dialog.dismiss();
+                    })
+                    .show();
+        });
+        dialogLayout.addView(etPaymentMethod);
 
         EditText etNotes = new EditText(MainActivity.this);
         etNotes.setHint("Add note (optional)");
@@ -479,11 +542,12 @@ public class MainActivity extends AppCompatActivity {
                     String date = etDate.getText().toString();
                     String billingCycle = etBillingCycle.getText().toString();
                     String category = etCategory.getText().toString();
+                    String paymentMethod = etPaymentMethod.getText().toString();
                     String notes = etNotes.getText().toString();
 
                     if (!name.isEmpty() && !amount.isEmpty() && !date.isEmpty()) {
                         executor.execute(() -> {
-                            db.aboneDao().ekle(new Abonelik(name, amount, date, category, notes, billingCycle, currency));
+                            db.aboneDao().ekle(new Abonelik(name, amount, date, category, notes, billingCycle, currency, paymentMethod));
                             runOnUiThread(() -> {
                                 loadData();
                             });

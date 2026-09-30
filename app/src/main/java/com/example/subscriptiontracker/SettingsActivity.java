@@ -14,9 +14,12 @@ import android.provider.Settings;
 import android.text.InputType;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
@@ -34,6 +37,8 @@ public class SettingsActivity extends AppCompatActivity {
     private TextView tvDefaultCurrencySub;
     private TextView tvBudgetLimitSub;
     private TextView tvAppLockSub;
+    private TextView tvThemeSub;
+    private TextView tvCurrencyRatesSub;
 
     private static final String PREFS_NAME = "AppSettings";
     private static final String KEY_REMINDER_DAYS = "reminder_days";
@@ -42,11 +47,19 @@ public class SettingsActivity extends AppCompatActivity {
     private static final String KEY_DEFAULT_CURRENCY = "default_currency";
     public static final String KEY_BUDGET_LIMIT = "budget_limit";
     public static final String KEY_APP_LOCK_ENABLED = "app_lock_enabled";
+    public static final String KEY_THEME_MODE = "theme_mode"; // 0: System, 1: Light, 2: Dark
 
     private ExecutorService executor = Executors.newSingleThreadExecutor();
 
-
-
+    public static void applyTheme(int themeMode) {
+        if (themeMode == 1) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        } else if (themeMode == 2) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +73,8 @@ public class SettingsActivity extends AppCompatActivity {
         MaterialCardView btnReminderDays = findViewById(R.id.btnReminderDays);
         MaterialCardView btnReminderTime = findViewById(R.id.btnReminderTime);
         MaterialCardView btnDefaultCurrency = findViewById(R.id.btnDefaultCurrency);
+        MaterialCardView btnCurrencyRates = findViewById(R.id.btnCurrencyRates);
+        MaterialCardView btnCurrencyConverter = findViewById(R.id.btnCurrencyConverter);
         MaterialCardView btnBudgetLimit = findViewById(R.id.btnBudgetLimit);
         MaterialCardView btnAppLock = findViewById(R.id.btnAppLock);
         MaterialCardView btnThemeSettings = findViewById(R.id.btnThemeSettings);
@@ -71,12 +86,26 @@ public class SettingsActivity extends AppCompatActivity {
         tvReminderDaysSub = findViewById(R.id.tvReminderDaysSub);
         tvReminderTimeSub = findViewById(R.id.tvReminderTimeSub);
         tvDefaultCurrencySub = findViewById(R.id.tvDefaultCurrencySub);
+        tvCurrencyRatesSub = findViewById(R.id.tvCurrencyRatesSub);
         tvBudgetLimitSub = findViewById(R.id.tvBudgetLimitSub);
         tvAppLockSub = findViewById(R.id.tvAppLockSub);
+        tvThemeSub = findViewById(R.id.tvThemeSub);
 
         loadSavedSettings();
 
-        btnBack.setOnClickListener(v -> finish());
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (isTaskRoot()) {
+                    Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                    startActivity(intent);
+                }
+                finish();
+            }
+        });
+
+        btnBack.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
 
         // 1. Sistem Bildirim Ayarları
         btnNotificationSettings.setOnClickListener(v -> {
@@ -94,11 +123,21 @@ public class SettingsActivity extends AppCompatActivity {
         // 2. Hatırlatma Günü Seçimi
         btnReminderDays.setOnClickListener(v -> {
             String[] options = {"Same Day", "1 Day Before", "2 Days Before", "3 Days Before", "1 Week Before"};
+            String current = sharedPreferences.getString(KEY_REMINDER_DAYS, "1 Day Before");
+            int selectedIndex = 1;
+            for (int i = 0; i < options.length; i++) {
+                if (options[i].equalsIgnoreCase(current)) {
+                    selectedIndex = i;
+                    break;
+                }
+            }
+
             new AlertDialog.Builder(this)
                     .setTitle("Select Default Reminder Day")
-                    .setItems(options, (dialog, which) -> {
+                    .setSingleChoiceItems(options, selectedIndex, (dialog, which) -> {
                         sharedPreferences.edit().putString(KEY_REMINDER_DAYS, options[which]).apply();
                         tvReminderDaysSub.setText(options[which]);
+                        dialog.dismiss();
                     })
                     .show();
         });
@@ -124,23 +163,115 @@ public class SettingsActivity extends AppCompatActivity {
             timePickerDialog.show();
         });
 
-
-
         // 4. Varsayılan Para Birimi Seçimi
         btnDefaultCurrency.setOnClickListener(v -> {
             String[] currencyLabels = {"₺ (TRY)", "$ (USD)", "€ (EUR)", "£ (GBP)"};
             String[] currencySymbols = {"₺", "$", "€", "£"};
+            String currentSymbol = sharedPreferences.getString(KEY_DEFAULT_CURRENCY, "₺");
+            int selectedIndex = 0;
+            for (int i = 0; i < currencySymbols.length; i++) {
+                if (currencySymbols[i].equalsIgnoreCase(currentSymbol)) {
+                    selectedIndex = i;
+                    break;
+                }
+            }
 
             new AlertDialog.Builder(this)
                     .setTitle("Select Default Currency")
-                    .setItems(currencyLabels, (dialog, which) -> {
+                    .setSingleChoiceItems(currencyLabels, selectedIndex, (dialog, which) -> {
                         String selectedSymbol = currencySymbols[which];
                         sharedPreferences.edit().putString(KEY_DEFAULT_CURRENCY, selectedSymbol).apply();
                         tvDefaultCurrencySub.setText(currencyLabels[which]);
+                        dialog.dismiss();
                     })
                     .show();
         });
 
+        // 4.5. Canlı Döviz Kurları Yenileme
+        btnCurrencyRates.setOnClickListener(v -> {
+            Toast.makeText(this, "Updating exchange rates...", Toast.LENGTH_SHORT).show();
+            CurrencyExchangeManager.fetchLatestRates(this, success -> {
+                if (success) {
+                    Toast.makeText(this, "Exchange rates updated successfully!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "Failed to update rates. Using cached/default rates.", Toast.LENGTH_SHORT).show();
+                }
+                tvCurrencyRatesSub.setText("Last updated: " + CurrencyExchangeManager.getLastUpdateTime(this));
+            });
+        });
+
+        // 4.6. Para Birimi Çevirici Aracı
+        btnCurrencyConverter.setOnClickListener(v -> {
+            ScrollView cvScroll = new ScrollView(this);
+            LinearLayout cvLayout = new LinearLayout(this);
+            cvLayout.setOrientation(LinearLayout.VERTICAL);
+            cvLayout.setPadding(50, 40, 50, 10);
+            cvScroll.addView(cvLayout);
+
+            EditText etAmount = new EditText(this);
+            etAmount.setHint("Amount to convert");
+            etAmount.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+            cvLayout.addView(etAmount);
+
+            String[] currencies = {"TRY", "USD", "EUR", "GBP"};
+            final String[] fromCurr = {"TRY"};
+            final String[] toCurr = {"USD"};
+
+            EditText etFrom = new EditText(this);
+            etFrom.setHint("From Currency");
+            etFrom.setText("TRY");
+            etFrom.setFocusable(false);
+            etFrom.setClickable(true);
+            etFrom.setOnClickListener(view -> {
+                new AlertDialog.Builder(this)
+                        .setTitle("From Currency")
+                        .setSingleChoiceItems(currencies, 0, (d, w) -> {
+                            etFrom.setText(currencies[w]);
+                            fromCurr[0] = currencies[w];
+                            d.dismiss();
+                        })
+                        .show();
+            });
+            cvLayout.addView(etFrom);
+
+            EditText etTo = new EditText(this);
+            etTo.setHint("To Currency");
+            etTo.setText("USD");
+            etTo.setFocusable(false);
+            etTo.setClickable(true);
+            etTo.setOnClickListener(view -> {
+                new AlertDialog.Builder(this)
+                        .setTitle("To Currency")
+                        .setSingleChoiceItems(currencies, 1, (d, w) -> {
+                            etTo.setText(currencies[w]);
+                            toCurr[0] = currencies[w];
+                            d.dismiss();
+                        })
+                        .show();
+            });
+            cvLayout.addView(etTo);
+
+            new AlertDialog.Builder(this)
+                    .setTitle("Currency Converter")
+                    .setView(cvScroll)
+                    .setPositiveButton("Convert", (dialog, which) -> {
+                        try {
+                            double amount = Double.parseDouble(etAmount.getText().toString().replace(",", "."));
+                            double amountInTRY = amount * CurrencyExchangeManager.getRateToTRY(this, fromCurr[0]);
+                            double finalAmount = amountInTRY / CurrencyExchangeManager.getRateToTRY(this, toCurr[0]);
+
+                            new AlertDialog.Builder(this)
+                                    .setTitle("Conversion Result")
+                                    .setMessage(String.format(Locale.getDefault(), "%.2f %s = %.2f %s", amount, fromCurr[0], finalAmount, toCurr[0]))
+                                    .setPositiveButton("OK", null)
+                                    .show();
+                        } catch (Exception e) {
+                            Toast.makeText(this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
+        });
 
         // 5. Aylık Bütçe Limiti
         btnBudgetLimit.setOnClickListener(v -> {
@@ -186,16 +317,21 @@ public class SettingsActivity extends AppCompatActivity {
         // 7. Tema Ayarları
         btnThemeSettings.setOnClickListener(v -> {
             String[] themes = {"System Default", "Light Theme", "Dark Theme"};
+            int currentThemeMode = sharedPreferences.getInt(KEY_THEME_MODE, 0);
+
             new AlertDialog.Builder(this)
                     .setTitle("Select Theme")
-                    .setItems(themes, (dialog, which) -> {
-                        if (which == 0) {
-                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-                        } else if (which == 1) {
-                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                    .setSingleChoiceItems(themes, currentThemeMode, (dialog, which) -> {
+                        sharedPreferences.edit().putInt(KEY_THEME_MODE, which).apply();
+                        if (which == 1) {
+                            tvThemeSub.setText("Light Theme");
                         } else if (which == 2) {
-                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                            tvThemeSub.setText("Dark Theme");
+                        } else {
+                            tvThemeSub.setText("System Default");
                         }
+                        applyTheme(which);
+                        dialog.dismiss();
                     })
                     .show();
         });
@@ -223,12 +359,17 @@ public class SettingsActivity extends AppCompatActivity {
         btnResetData.setOnClickListener(v -> {
             new AlertDialog.Builder(this)
                     .setTitle("⚠️ Reset All Data")
-                    .setMessage("Are you sure you want to delete ALL subscription records? This action cannot be undone.")
+                    .setMessage("Are you sure you want to delete ALL data (subscriptions, incomes, and settings)? This action cannot be undone.")
                     .setPositiveButton("Delete All", (dialog, which) -> {
                         executor.execute(() -> {
-                            AboneDatabase.getInstance(this).aboneDao().tumunuSil();
+                            AboneDatabase db = AboneDatabase.getInstance(this);
+                            db.aboneDao().tumunuSil();
+                            db.incomeDao().tumunuSil();
+                            db.expenseDao().tumunuSil();
+                            sharedPreferences.edit().clear().apply();
                             runOnUiThread(() -> {
-                                Toast.makeText(this, "All subscription data has been reset.", Toast.LENGTH_LONG).show();
+                                loadSavedSettings();
+                                Toast.makeText(this, "All subscriptions, incomes, expenses, and settings have been deleted.", Toast.LENGTH_LONG).show();
                             });
                         });
                     })
@@ -267,6 +408,7 @@ public class SettingsActivity extends AppCompatActivity {
         String currency = sharedPreferences.getString(KEY_DEFAULT_CURRENCY, "₺");
         float budgetLimit = sharedPreferences.getFloat(KEY_BUDGET_LIMIT, 0f);
         boolean appLock = sharedPreferences.getBoolean(KEY_APP_LOCK_ENABLED, false);
+        int themeMode = sharedPreferences.getInt(KEY_THEME_MODE, 0);
 
         tvReminderDaysSub.setText(days);
         updateTimeSubText(hour, minute);
@@ -281,6 +423,10 @@ public class SettingsActivity extends AppCompatActivity {
             tvDefaultCurrencySub.setText("₺ (TRY)");
         }
 
+        if (tvCurrencyRatesSub != null) {
+            tvCurrencyRatesSub.setText("Last updated: " + CurrencyExchangeManager.getLastUpdateTime(this));
+        }
+
         if (budgetLimit > 0) {
             tvBudgetLimitSub.setText(String.format(Locale.getDefault(), "%s%.2f", currency, budgetLimit));
         } else {
@@ -288,6 +434,14 @@ public class SettingsActivity extends AppCompatActivity {
         }
 
         tvAppLockSub.setText(appLock ? "Enabled (Active on launch)" : "Disabled");
+
+        if (themeMode == 1) {
+            if (tvThemeSub != null) tvThemeSub.setText("Light Theme");
+        } else if (themeMode == 2) {
+            if (tvThemeSub != null) tvThemeSub.setText("Dark Theme");
+        } else {
+            if (tvThemeSub != null) tvThemeSub.setText("System Default");
+        }
     }
 
     private void updateTimeSubText(int hour, int minute) {

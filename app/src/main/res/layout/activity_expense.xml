@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/mainIncome"
+    android:id="@+id/mainExpense"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_main"
@@ -20,16 +20,16 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:fontFamily="sans-serif-bold"
-            android:text="Income Management"
+            android:text="One-off Expenses"
             android:textColor="@color/text_primary"
             android:textSize="20sp" />
 
         <ImageButton
-            android:id="@+id/btnAddIncome"
+            android:id="@+id/btnAddExpense"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Add Income"
+            android:contentDescription="Add Expense"
             android:src="@android:drawable/ic_input_add"
             app:tint="@color/text_primary" />
     </LinearLayout>
@@ -46,7 +46,7 @@
             android:orientation="vertical"
             android:paddingHorizontal="16dp">
 
-            <!-- Toplam Gelir Özet Kartı -->
+            <!-- Toplam Gider Özet Kartı -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -66,25 +66,25 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Total Monthly Income"
+                        android:text="Total One-off Expenses"
                         android:textColor="@color/text_secondary"
                         android:textSize="13sp" />
 
                     <TextView
-                        android:id="@+id/tvTotalIncome"
+                        android:id="@+id/tvTotalExpense"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:fontFamily="sans-serif-bold"
                         android:text="₺0.00"
-                        android:textColor="#4CD964"
+                        android:textColor="#FF5252"
                         android:textSize="28sp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Gelir Listesi -->
+            <!-- Gider Listesi -->
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvIncomes"
+                android:id="@+id/rvExpenses"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:nestedScrollingEnabled="false" />

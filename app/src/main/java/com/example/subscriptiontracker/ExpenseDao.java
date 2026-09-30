@@ -9,20 +9,20 @@ import androidx.room.Update;
 import java.util.List;
 
 @Dao
-public interface IncomeDao {
+public interface ExpenseDao {
 
     @Insert
-    void ekle(Income income);
+    void ekle(Expense expense);
 
     @Delete
-    void sil(Income income);
+    void sil(Expense expense);
 
     @Update
-    void guncelle(Income income);
+    void guncelle(Expense expense);
 
-    @Query("SELECT * FROM income_table")
-    List<Income> tumGelirleriGetir();
+    @Query("SELECT * FROM expense_table ORDER BY id DESC")
+    List<Expense> tumGiderleriGetir();
 
-    @Query("DELETE FROM income_table")
+    @Query("DELETE FROM expense_table")
     void tumunuSil();
 }

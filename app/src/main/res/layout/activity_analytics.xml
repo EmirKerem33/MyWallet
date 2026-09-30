@@ -4,7 +4,7 @@
     android:id="@+id/mainAnalytics"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0F0F14"
+    android:background="@color/bg_main"
     android:orientation="vertical">
 
     <!-- Üst Başlık -->
@@ -14,7 +14,7 @@
         android:padding="16dp"
         android:fontFamily="sans-serif-bold"
         android:text="Financial Analytics"
-        android:textColor="#F0F0F5"
+        android:textColor="@color/text_primary"
         android:textSize="22sp" />
 
     <ScrollView
@@ -41,9 +41,9 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginEnd="6dp"
-                    app:cardBackgroundColor="#16161E"
+                    app:cardBackgroundColor="@color/bg_card"
                     app:cardCornerRadius="12dp"
-                    app:strokeColor="#2D2D3F"
+                    app:strokeColor="@color/divider"
                     app:strokeWidth="1dp">
 
                     <LinearLayout
@@ -55,7 +55,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Total Income"
-                            android:textColor="#A0A0B5"
+                            android:textColor="@color/text_secondary"
                             android:textSize="12sp" />
                         <TextView
                             android:id="@+id/tvAnalyticsIncome"
@@ -74,9 +74,9 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginStart="6dp"
-                    app:cardBackgroundColor="#16161E"
+                    app:cardBackgroundColor="@color/bg_card"
                     app:cardCornerRadius="12dp"
-                    app:strokeColor="#2D2D3F"
+                    app:strokeColor="@color/divider"
                     app:strokeWidth="1dp">
 
                     <LinearLayout
@@ -88,7 +88,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Total Expense"
-                            android:textColor="#A0A0B5"
+                            android:textColor="@color/text_secondary"
                             android:textSize="12sp" />
                         <TextView
                             android:id="@+id/tvAnalyticsExpense"
@@ -103,14 +103,50 @@
                 </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
 
+            <!-- Akıllı Tasarruf Önerileri ve Yıllık Projeksiyon Kartı -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardBackgroundColor="@color/bg_card"
+                app:cardCornerRadius="12dp"
+                app:strokeColor="@color/divider"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-bold"
+                        android:text="💡 Smart Financial Insights"
+                        android:textColor="@color/text_primary"
+                        android:textSize="15sp"
+                        android:layout_marginBottom="6dp" />
+
+                    <TextView
+                        android:id="@+id/tvSmartInsight"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif"
+                        android:text="Analyzing your subscription habits and yearly projections..."
+                        android:textColor="@color/text_secondary"
+                        android:textSize="13sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
             <!-- Pasta Grafiği (PieChart) -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="320dp"
                 android:layout_marginBottom="16dp"
-                app:cardBackgroundColor="#16161E"
+                app:cardBackgroundColor="@color/bg_card"
                 app:cardCornerRadius="12dp"
-                app:strokeColor="#2D2D3F"
+                app:strokeColor="@color/divider"
                 app:strokeWidth="1dp">
 
                 <LinearLayout
@@ -123,13 +159,45 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Expense Breakdown by Category"
-                        android:textColor="#F0F0F5"
+                        android:textColor="@color/text_primary"
                         android:textSize="14sp"
                         android:fontFamily="sans-serif-bold"
                         android:layout_marginBottom="8dp"/>
 
                     <com.github.mikephil.charting.charts.PieChart
                         android:id="@+id/pieChart"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Çubuk Grafik (BarChart - Income vs Expense & Payment Methods) -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="320dp"
+                android:layout_marginBottom="16dp"
+                app:cardBackgroundColor="@color/bg_card"
+                app:cardCornerRadius="12dp"
+                app:strokeColor="@color/divider"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Income vs Expense &amp; Payment Methods"
+                        android:textColor="@color/text_primary"
+                        android:textSize="14sp"
+                        android:fontFamily="sans-serif-bold"
+                        android:layout_marginBottom="8dp"/>
+
+                    <com.github.mikephil.charting.charts.BarChart
+                        android:id="@+id/barChart"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent" />
                 </LinearLayout>
@@ -143,9 +211,9 @@
         android:id="@+id/bottomNavigationView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#16161E"
-        app:itemIconTint="#A0A0B5"
-        app:itemTextColor="#A0A0B5"
+        android:background="@color/bg_card"
+        app:itemIconTint="@color/text_secondary"
+        app:itemTextColor="@color/text_secondary"
         app:menu="@menu/bottom_nav_menu" />
 
 </LinearLayout>

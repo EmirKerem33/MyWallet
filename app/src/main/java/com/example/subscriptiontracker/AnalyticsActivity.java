@@ -7,12 +7,19 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
+import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -26,21 +33,40 @@ public class AnalyticsActivity extends AppCompatActivity {
 
     private AboneDatabase db;
     private ExecutorService executor = Executors.newSingleThreadExecutor();
-    private TextView tvAnalyticsIncome, tvAnalyticsExpense;
+    private TextView tvAnalyticsIncome, tvAnalyticsExpense, tvSmartInsight;
     private PieChart pieChart;
+    private BarChart barChart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        SharedPreferences prefs = getSharedPreferences("AppSettings", Context.MODE_PRIVATE);
+        int themeMode = prefs.getInt(SettingsActivity.KEY_THEME_MODE, 0);
+        SettingsActivity.applyTheme(themeMode);
+
         setContentView(R.layout.activity_analytics);
 
         db = AboneDatabase.getInstance(this);
 
         tvAnalyticsIncome = findViewById(R.id.tvAnalyticsIncome);
         tvAnalyticsExpense = findViewById(R.id.tvAnalyticsExpense);
+        tvSmartInsight = findViewById(R.id.tvSmartInsight);
         pieChart = findViewById(R.id.pieChart);
+        barChart = findViewById(R.id.barChart);
 
         setupBottomNav();
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                Intent intent = new Intent(AnalyticsActivity.this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(intent);
+                finish();
+            }
+        });
+
         loadFinancialData();
     }
 
@@ -51,6 +77,10 @@ public class AnalyticsActivity extends AppCompatActivity {
             int id = item.getItemId();
             if (id == R.id.nav_subscriptions) {
                 startActivity(new Intent(this, MainActivity.class));
+                finish();
+                return true;
+            } else if (id == R.id.nav_expenses) {
+                startActivity(new Intent(this, ExpenseActivity.class));
                 finish();
                 return true;
             } else if (id == R.id.nav_income) {
@@ -71,76 +101,162 @@ public class AnalyticsActivity extends AppCompatActivity {
     private void loadFinancialData() {
         executor.execute(() -> {
             List<Income> incomes = db.incomeDao().tumGelirleriGetir();
-            List<Abonelik> subs = db.aboneDao().tumunuGetir(); // Doğru DAO metodu: tumunuGetir()
+            List<Abonelik> subs = db.aboneDao().tumunuGetir();
+            List<Expense> expenses = db.expenseDao().tumGiderleriGetir();
 
             SharedPreferences prefs = getSharedPreferences("AppSettings", Context.MODE_PRIVATE);
-            String currency = prefs.getString("default_currency", "₺");
+            String defaultCurrency = prefs.getString("default_currency", "₺");
 
             double totalIncome = 0.0;
-            for (Income inc : incomes) {
-                try {
-                    totalIncome += Double.parseDouble(inc.getAmount().replace(",", "."));
-                } catch (Exception ignored) {}
+            if (incomes != null) {
+                for (Income inc : incomes) {
+                    try {
+                        double amount = Double.parseDouble(inc.getAmount().replace(",", "."));
+                        String incCurr = inc.getCurrency() != null ? inc.getCurrency() : "₺";
+                        totalIncome += convertCurrency(amount, incCurr, defaultCurrency);
+                    } catch (Exception ignored) {}
+                }
             }
 
             double totalExpense = 0.0;
             float music = 0, movies = 0, software = 0, gaming = 0, other = 0;
 
-            for (Abonelik sub : subs) {
-                try {
-                    double amount = Double.parseDouble(sub.getAmount().replace(",", "."));
-                    totalExpense += amount;
+            if (subs != null) {
+                for (Abonelik sub : subs) {
+                    try {
+                        double amount = Double.parseDouble(sub.getAmount().replace(",", "."));
+                        String subCurr = sub.getCurrency() != null ? sub.getCurrency() : "₺";
+                        double convertedAmount = convertCurrency(amount, subCurr, defaultCurrency);
+                        totalExpense += convertedAmount;
 
-                    // Abonelik sınıfındaki doğru metod: getCategory()
-                    String cat = sub.getCategory() != null ? sub.getCategory() : "Other";
-                    if (cat.contains("Music")) music += amount;
-                    else if (cat.contains("Movie") || cat.contains("TV")) movies += amount;
-                    else if (cat.contains("Software") || cat.contains("Cloud")) software += amount;
-                    else if (cat.contains("Gaming")) gaming += amount;
-                    else other += amount;
-                } catch (Exception ignored) {}
+                        String cat = sub.getCategory() != null ? sub.getCategory() : "Other";
+                        if (cat.contains("Music")) music += convertedAmount;
+                        else if (cat.contains("Movie") || cat.contains("TV")) movies += convertedAmount;
+                        else if (cat.contains("Software") || cat.contains("Cloud")) software += convertedAmount;
+                        else if (cat.contains("Gaming")) gaming += convertedAmount;
+                        else other += convertedAmount;
+                    } catch (Exception ignored) {}
+                }
+            }
+
+            if (expenses != null) {
+                for (Expense exp : expenses) {
+                    try {
+                        double amount = Double.parseDouble(exp.getAmount().replace(",", "."));
+                        String expCurr = exp.getCurrency() != null ? exp.getCurrency() : "₺";
+                        double convertedAmount = convertCurrency(amount, expCurr, defaultCurrency);
+                        totalExpense += convertedAmount;
+                        other += convertedAmount;
+                    } catch (Exception ignored) {}
+                }
             }
 
             final double finalIncome = totalIncome;
             final double finalExpense = totalExpense;
+            final double yearlyProjection = finalExpense * 12;
+
+            String savingsTip;
+            if (finalExpense == 0) {
+                savingsTip = "You have no active expenses recorded. Add subscriptions to get AI-powered financial insights!";
+            } else if (finalIncome > finalExpense) {
+                savingsTip = String.format(Locale.getDefault(),
+                        "📊 Yearly Projection: Your annual spending is projected at %.2f %s.\n\nGreat job! Your income exceeds your expenses. You are saving %.2f %s monthly.",
+                        yearlyProjection, defaultCurrency, (finalIncome - finalExpense), defaultCurrency);
+            } else {
+                savingsTip = String.format(Locale.getDefault(),
+                        "📊 Yearly Projection: Your annual spending is projected at %.2f %s.\n\n⚠️ Warning: Your expenses exceed your income. Consider reviewing or cancelling unused subscriptions to save money.",
+                        yearlyProjection, defaultCurrency);
+            }
 
             List<PieEntry> entries = new ArrayList<>();
             if (music > 0) entries.add(new PieEntry(music, "Music"));
             if (movies > 0) entries.add(new PieEntry(movies, "Movies & TV"));
             if (software > 0) entries.add(new PieEntry(software, "Software"));
             if (gaming > 0) entries.add(new PieEntry(gaming, "Gaming"));
-            if (other > 0 || entries.isEmpty()) entries.add(new PieEntry(other > 0 ? other : 1f, "Other / None"));
+            if (other > 0 || entries.isEmpty()) entries.add(new PieEntry(other > 0 ? other : 1f, "Other / One-off"));
 
             runOnUiThread(() -> {
-                tvAnalyticsIncome.setText(String.format(Locale.getDefault(), "%s%.2f", currency, finalIncome));
-                tvAnalyticsExpense.setText(String.format(Locale.getDefault(), "%s%.2f", currency, finalExpense));
-                setupPieChart(entries);
+                tvAnalyticsIncome.setText(String.format(Locale.getDefault(), "%s%.2f", defaultCurrency, finalIncome));
+                tvAnalyticsExpense.setText(String.format(Locale.getDefault(), "%s%.2f", currencySymbolFix(defaultCurrency), finalExpense));
+                tvSmartInsight.setText(savingsTip);
+                setupPieChart(entries, defaultCurrency);
+                setupBarChart(finalIncome, finalExpense, defaultCurrency);
             });
         });
     }
 
+    private String currencySymbolFix(String currency) {
+        return currency != null ? currency : "₺";
+    }
+
+    private double convertCurrency(double amount, String fromCurrency, String toCurrency) {
+        if (fromCurrency == null || fromCurrency.isEmpty()) fromCurrency = "₺";
+        if (toCurrency == null || toCurrency.isEmpty()) toCurrency = "₺";
+
+        if (fromCurrency.equals(toCurrency)) return amount;
+
+        double fromRate = CurrencyExchangeManager.getRateToTRY(this, fromCurrency);
+        double toRate = CurrencyExchangeManager.getRateToTRY(this, toCurrency);
+
+        return (amount * fromRate) / toRate;
+    }
 
     @Override
-    public void onBackPressed() {
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        startActivity(intent);
-        finish();
+    protected void onResume() {
+        super.onResume();
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        if (bottomNavigationView != null) {
+            bottomNavigationView.setSelectedItemId(R.id.nav_analytics);
+        }
+        loadFinancialData();
     }
-    private void setupPieChart(List<PieEntry> entries) {
+
+    private void setupPieChart(List<PieEntry> entries, String currency) {
         PieDataSet dataSet = new PieDataSet(entries, "Categories");
         dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
         dataSet.setValueTextColor(Color.WHITE);
-        dataSet.setValueTextSize(14f);
+        dataSet.setValueTextSize(13f);
+        dataSet.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                return String.format(Locale.getDefault(), "%.1f %s", value, currency);
+            }
+        });
 
         PieData data = new PieData(dataSet);
         pieChart.setData(data);
         pieChart.getDescription().setEnabled(false);
         pieChart.setCenterText("Expenses");
-        pieChart.setCenterTextColor(Color.WHITE); // Doğru metod adı
-        pieChart.setHoleColor(Color.parseColor("#16161E"));
-        pieChart.setTransparentCircleColor(Color.parseColor("#2D2D3F"));
-        pieChart.getLegend().setTextColor(Color.WHITE);
+        pieChart.setCenterTextColor(ContextCompat.getColor(this, R.color.text_primary));
+        pieChart.setHoleColor(ContextCompat.getColor(this, R.color.bg_card));
+        pieChart.setTransparentCircleColor(ContextCompat.getColor(this, R.color.divider));
+        pieChart.getLegend().setTextColor(ContextCompat.getColor(this, R.color.text_primary));
         pieChart.invalidate();
+    }
+
+    private void setupBarChart(double income, double expense, String currency) {
+        ArrayList<BarEntry> entries = new ArrayList<>();
+        entries.add(new BarEntry(0f, (float) income));
+        entries.add(new BarEntry(1f, (float) expense));
+
+        BarDataSet dataSet = new BarDataSet(entries, "Income vs Expense (" + currency + ")");
+        dataSet.setColors(new int[]{Color.parseColor("#4CD964"), Color.parseColor("#FF5252")});
+        dataSet.setValueTextColor(ContextCompat.getColor(this, R.color.text_primary));
+        dataSet.setValueTextSize(12f);
+        dataSet.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                return String.format(Locale.getDefault(), "%.1f %s", value, currency);
+            }
+        });
+
+        BarData data = new BarData(dataSet);
+        barChart.setData(data);
+        barChart.getDescription().setEnabled(false);
+        barChart.getXAxis().setDrawLabels(false);
+        barChart.getAxisLeft().setTextColor(ContextCompat.getColor(this, R.color.text_primary));
+        barChart.getAxisRight().setEnabled(false);
+        barChart.getLegend().setTextColor(ContextCompat.getColor(this, R.color.text_primary));
+        barChart.invalidate();
     }
 }

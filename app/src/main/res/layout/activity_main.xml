@@ -4,7 +4,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0F0F14"
+    android:background="@color/bg_main"
     android:orientation="vertical">
 
     <!-- Header / Üst Başlık -->
@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-bold"
             android:text="Subscription Tracker"
-            android:textColor="#F0F0F5"
+            android:textColor="@color/text_primary"
             android:textSize="22sp" />
 
         <ImageButton
@@ -29,7 +29,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Add Subscription"
             android:src="@android:drawable/ic_input_add"
-            app:tint="#F0F0F5" />
+            app:tint="@color/text_primary" />
     </RelativeLayout>
 
     <ScrollView
@@ -49,10 +49,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="12dp"
                 android:layout_marginBottom="12dp"
-                app:cardBackgroundColor="#16161E"
+                app:cardBackgroundColor="@color/bg_card"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="0dp"
-                app:strokeColor="#2D2D3F"
+                app:strokeColor="@color/divider"
                 app:strokeWidth="1dp">
 
                 <LinearLayout
@@ -66,7 +66,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif"
                         android:text="Monthly Total"
-                        android:textColor="#A0A0B5"
+                        android:textColor="@color/text_secondary"
                         android:textSize="13sp" />
 
                     <TextView
@@ -76,14 +76,14 @@
                         android:layout_marginTop="4dp"
                         android:fontFamily="sans-serif-bold"
                         android:text="$0.00"
-                        android:textColor="#F0F0F5"
+                        android:textColor="@color/text_primary"
                         android:textSize="28sp" />
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:layout_marginVertical="12dp"
-                        android:background="#2D2D3F" />
+                        android:background="@color/divider" />
 
                     <RelativeLayout
                         android:layout_width="match_parent"
@@ -95,7 +95,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif"
                             android:text="0 Active Subscriptions"
-                            android:textColor="#A0A0B5"
+                            android:textColor="@color/text_secondary"
                             android:textSize="13sp" />
 
                         <TextView
@@ -105,7 +105,7 @@
                             android:layout_alignParentEnd="true"
                             android:fontFamily="sans-serif"
                             android:text="Next: -"
-                            android:textColor="#A0A0B5"
+                            android:textColor="@color/text_secondary"
                             android:textSize="13sp" />
                     </RelativeLayout>
                 </LinearLayout>
@@ -131,8 +131,8 @@
                     android:hint="Search subscription..."
                     android:inputType="text"
                     android:paddingHorizontal="12dp"
-                    android:textColor="#F0F0F5"
-                    android:textColorHint="#6E6E8A"
+                    android:textColor="@color/text_primary"
+                    android:textColorHint="@color/text_secondary"
                     android:textSize="14sp" />
 
                 <!-- Sıralama Butonu -->
@@ -144,7 +144,7 @@
                     android:background="@drawable/bg_search_input"
                     android:contentDescription="Sort"
                     android:src="@android:drawable/ic_menu_sort_by_size"
-                    app:tint="#F0F0F5" />
+                    app:tint="@color/text_primary" />
             </LinearLayout>
 
             <!-- KATEGORİ CHIP'LERİ (Yatay Kaydırılabilir) -->
@@ -170,9 +170,9 @@
                         android:layout_height="wrap_content"
                         android:checked="true"
                         android:text="All"
-                        android:textColor="#F0F0F5"
-                        app:chipBackgroundColor="#16161E"
-                        app:chipStrokeColor="#2D2D3F"
+                        android:textColor="@color/text_primary"
+                        app:chipBackgroundColor="@color/bg_card"
+                        app:chipStrokeColor="@color/divider"
                         app:chipStrokeWidth="1dp" />
 
                     <com.google.android.material.chip.Chip
@@ -181,9 +181,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Music"
-                        android:textColor="#F0F0F5"
-                        app:chipBackgroundColor="#16161E"
-                        app:chipStrokeColor="#2D2D3F"
+                        android:textColor="@color/text_primary"
+                        app:chipBackgroundColor="@color/bg_card"
+                        app:chipStrokeColor="@color/divider"
                         app:chipStrokeWidth="1dp" />
 
                     <com.google.android.material.chip.Chip
@@ -192,9 +192,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Movies &amp; TV"
-                        android:textColor="#F0F0F5"
-                        app:chipBackgroundColor="#16161E"
-                        app:chipStrokeColor="#2D2D3F"
+                        android:textColor="@color/text_primary"
+                        app:chipBackgroundColor="@color/bg_card"
+                        app:chipStrokeColor="@color/divider"
                         app:chipStrokeWidth="1dp" />
 
                     <com.google.android.material.chip.Chip
@@ -203,9 +203,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Software &amp; Cloud"
-                        android:textColor="#F0F0F5"
-                        app:chipBackgroundColor="#16161E"
-                        app:chipStrokeColor="#2D2D3F"
+                        android:textColor="@color/text_primary"
+                        app:chipBackgroundColor="@color/bg_card"
+                        app:chipStrokeColor="@color/divider"
                         app:chipStrokeWidth="1dp" />
 
                     <com.google.android.material.chip.Chip
@@ -214,9 +214,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Gaming"
-                        android:textColor="#F0F0F5"
-                        app:chipBackgroundColor="#16161E"
-                        app:chipStrokeColor="#2D2D3F"
+                        android:textColor="@color/text_primary"
+                        app:chipBackgroundColor="@color/bg_card"
+                        app:chipStrokeColor="@color/divider"
                         app:chipStrokeWidth="1dp" />
 
                     <com.google.android.material.chip.Chip
@@ -225,9 +225,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Other"
-                        android:textColor="#F0F0F5"
-                        app:chipBackgroundColor="#16161E"
-                        app:chipStrokeColor="#2D2D3F"
+                        android:textColor="@color/text_primary"
+                        app:chipBackgroundColor="@color/bg_card"
+                        app:chipStrokeColor="@color/divider"
                         app:chipStrokeWidth="1dp" />
                 </com.google.android.material.chip.ChipGroup>
             </HorizontalScrollView>
@@ -247,9 +247,9 @@
         android:id="@+id/bottomNavigationView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#16161E"
-        app:itemIconTint="#A0A0B5"
-        app:itemTextColor="#A0A0B5"
+        android:background="@color/bg_card"
+        app:itemIconTint="@color/text_secondary"
+        app:itemTextColor="@color/text_secondary"
         app:menu="@menu/bottom_nav_menu" />
 
 </LinearLayout>

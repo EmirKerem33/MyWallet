@@ -6,6 +6,11 @@
         android:title="Subscriptions" />
 
     <item
+        android:id="@+id/nav_expenses"
+        android:icon="@android:drawable/ic_menu_send"
+        android:title="Expenses" />
+
+    <item
         android:id="@+id/nav_income"
         android:icon="@android:drawable/ic_menu_upload"
         android:title="Income" />

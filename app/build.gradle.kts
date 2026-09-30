@@ -12,8 +12,8 @@ android {
         applicationId = "com.example.subscriptiontracker"
         minSdk = 24
         targetSdk = 37
-        versionCode = 2
-        versionName = "2.0"
+        versionCode = 3
+        versionName = "2.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -44,5 +44,7 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.biometric:biometric:1.1.0")
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    implementation("androidx.work:work-runtime:2.9.0")
     annotationProcessor("androidx.room:room-compiler:2.6.1")
 }
