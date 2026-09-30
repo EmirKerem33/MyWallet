@@ -1,4 +1,4 @@
-# Subscription Tracker
+# MyWallet
 
 Subscription Tracker is an open-source Android application designed to track and manage recurring subscriptions, personal income, monthly expenses, and payment schedules.
 
