@@ -5,11 +5,12 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-@Database(entities = {Abonelik.class, Income.class}, version = 3, exportSchema = false)
+@Database(entities = {Abonelik.class, Income.class, Expense.class}, version = 5, exportSchema = false)
 public abstract class AboneDatabase extends RoomDatabase {
 
     public abstract AboneDao aboneDao();
     public abstract IncomeDao incomeDao();
+    public abstract ExpenseDao expenseDao();
 
     private static volatile AboneDatabase INSTANCE;
 

@@ -18,9 +18,10 @@ public class Abonelik {
     private String category;
     private String notes;
     private String billingCycle;
-    private String currency; // Yeni eklenen para birimi alanı (örn: $, ₺, €, £)
+    private String currency; // Para birimi alanı (örn: $, ₺, €, £)
+    private String paymentMethod; // Ödeme yöntemi alanı (örn: Credit Card, Debit Card, Cash)
 
-    public Abonelik(@NonNull String name, String amount, String date, String category, String notes, String billingCycle, String currency) {
+    public Abonelik(@NonNull String name, String amount, String date, String category, String notes, String billingCycle, String currency, String paymentMethod) {
         this.name = name;
         this.amount = amount;
         this.date = date;
@@ -28,16 +29,22 @@ public class Abonelik {
         this.notes = notes;
         this.billingCycle = billingCycle;
         this.currency = currency;
+        this.paymentMethod = paymentMethod;
+    }
+
+    @Ignore
+    public Abonelik(@NonNull String name, String amount, String date, String category, String notes, String billingCycle, String currency) {
+        this(name, amount, date, category, notes, billingCycle, currency, "Credit Card");
     }
 
     @Ignore
     public Abonelik(@NonNull String name, String amount, String date, String category, String notes, String billingCycle) {
-        this(name, amount, date, category, notes, billingCycle, "$");
+        this(name, amount, date, category, notes, billingCycle, "₺", "Credit Card");
     }
 
     @Ignore
     public Abonelik(@NonNull String name, String amount, String date, String category, String notes) {
-        this(name, amount, date, category, notes, "", "$");
+        this(name, amount, date, category, notes, "", "₺", "Credit Card");
     }
 
     public int getId() { return id; }
@@ -62,8 +69,11 @@ public class Abonelik {
     public String getBillingCycle() { return billingCycle; }
     public void setBillingCycle(String billingCycle) { this.billingCycle = billingCycle; }
 
-    public String getCurrency() { return currency != null ? currency : "$"; }
+    public String getCurrency() { return currency != null ? currency : "₺"; }
     public void setCurrency(String currency) { this.currency = currency; }
+
+    public String getPaymentMethod() { return paymentMethod != null && !paymentMethod.isEmpty() ? paymentMethod : "Credit Card"; }
+    public void setPaymentMethod(String paymentMethod) { this.paymentMethod = paymentMethod; }
 
     // Geriye dönük uyumluluk takma adları (Aliases)
     @NonNull

@@ -13,6 +13,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -42,6 +43,11 @@ public class IncomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        SharedPreferences prefs = getSharedPreferences("AppSettings", Context.MODE_PRIVATE);
+        int themeMode = prefs.getInt(SettingsActivity.KEY_THEME_MODE, 0);
+        SettingsActivity.applyTheme(themeMode);
+
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_income);
 
@@ -61,6 +67,16 @@ public class IncomeActivity extends AppCompatActivity {
 
         setupBottomNav();
 
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                Intent intent = new Intent(IncomeActivity.this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(intent);
+                finish();
+            }
+        });
+
         adapter = new TransactionAdapter(transactionList);
         rvTransactions.setAdapter(adapter);
         rvTransactions.setLayoutManager(new LinearLayoutManager(this));
@@ -79,13 +95,16 @@ public class IncomeActivity extends AppCompatActivity {
                 return true;
             } else if (id == R.id.nav_income) {
                 return true;
+            } else if (id == R.id.nav_expenses) {
+                startActivity(new Intent(this, ExpenseActivity.class));
+                finish();
+                return true;
             } else if (id == R.id.nav_analytics) {
                 startActivity(new Intent(this, AnalyticsActivity.class));
                 finish();
                 return true;
             } else if (id == R.id.nav_settings) {
                 startActivity(new Intent(this, SettingsActivity.class));
-                finish();
                 return true;
             }
             return false;
@@ -163,10 +182,23 @@ public class IncomeActivity extends AppCompatActivity {
         etCurrency.setClickable(true);
 
         String[] currencyOptions = {"₺", "$", "€", "£"};
-        etCurrency.setOnClickListener(v -> new AlertDialog.Builder(this)
-                .setTitle("Select Currency")
-                .setItems(currencyOptions, (dialog, which) -> etCurrency.setText(currencyOptions[which]))
-                .show());
+        etCurrency.setOnClickListener(v -> {
+            String currentCurrency = etCurrency.getText().toString();
+            int selectedIndex = 0;
+            for (int i = 0; i < currencyOptions.length; i++) {
+                if (currencyOptions[i].equalsIgnoreCase(currentCurrency)) {
+                    selectedIndex = i;
+                    break;
+                }
+            }
+            new AlertDialog.Builder(this)
+                    .setTitle("Select Currency")
+                    .setSingleChoiceItems(currencyOptions, selectedIndex, (dialog, which) -> {
+                        etCurrency.setText(currencyOptions[which]);
+                        dialog.dismiss();
+                    })
+                    .show();
+        });
         dialogLayout.addView(etCurrency);
 
         EditText etDate = new EditText(this);
@@ -204,14 +236,6 @@ public class IncomeActivity extends AppCompatActivity {
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
-    }
-
-    @Override
-    public void onBackPressed() {
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        startActivity(intent);
-        finish();
     }
 
     @Override

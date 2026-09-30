@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0F0F14">
+    android:background="@color/bg_main">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -26,7 +26,7 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Back"
                 android:src="@android:drawable/ic_menu_revert"
-                app:tint="#F0F0F5" />
+                app:tint="@color/text_primary" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -34,7 +34,7 @@
                 android:layout_marginStart="8dp"
                 android:fontFamily="sans-serif-bold"
                 android:text="Settings"
-                android:textColor="#F0F0F5"
+                android:textColor="@color/text_primary"
                 android:textSize="20sp" />
         </LinearLayout>
 
@@ -46,10 +46,10 @@
             android:layout_marginVertical="5dp"
             android:clickable="true"
             android:focusable="true"
-            app:cardBackgroundColor="#16161E"
+            app:cardBackgroundColor="@color/bg_card"
             app:cardCornerRadius="8dp"
             app:cardElevation="0dp"
-            app:strokeColor="#2D2D3F"
+            app:strokeColor="@color/divider"
             app:strokeWidth="1dp">
 
             <LinearLayout
@@ -63,7 +63,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-bold"
                     android:text="System Notification Permissions"
-                    android:textColor="#F0F0F5"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp" />
 
                 <TextView
@@ -72,7 +72,7 @@
                     android:layout_marginTop="6dp"
                     android:fontFamily="sans-serif"
                     android:text="Manage system level permissions for reminders"
-                    android:textColor="#A0A0B5"
+                    android:textColor="@color/text_secondary"
                     android:textSize="13sp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -85,10 +85,10 @@
             android:layout_marginVertical="5dp"
             android:clickable="true"
             android:focusable="true"
-            app:cardBackgroundColor="#16161E"
+            app:cardBackgroundColor="@color/bg_card"
             app:cardCornerRadius="8dp"
             app:cardElevation="0dp"
-            app:strokeColor="#2D2D3F"
+            app:strokeColor="@color/divider"
             app:strokeWidth="1dp">
 
             <LinearLayout
@@ -102,7 +102,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-bold"
                     android:text="Default Reminder Day"
-                    android:textColor="#F0F0F5"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp" />
 
                 <TextView
@@ -112,7 +112,7 @@
                     android:layout_marginTop="6dp"
                     android:fontFamily="sans-serif"
                     android:text="1 Day Before"
-                    android:textColor="#A0A0B5"
+                    android:textColor="@color/text_secondary"
                     android:textSize="13sp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -125,10 +125,10 @@
             android:layout_marginVertical="5dp"
             android:clickable="true"
             android:focusable="true"
-            app:cardBackgroundColor="#16161E"
+            app:cardBackgroundColor="@color/bg_card"
             app:cardCornerRadius="8dp"
             app:cardElevation="0dp"
-            app:strokeColor="#2D2D3F"
+            app:strokeColor="@color/divider"
             app:strokeWidth="1dp">
 
             <LinearLayout
@@ -142,7 +142,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-bold"
                     android:text="Notification Time"
-                    android:textColor="#F0F0F5"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp" />
 
                 <TextView
@@ -152,7 +152,7 @@
                     android:layout_marginTop="6dp"
                     android:fontFamily="sans-serif"
                     android:text="09:00"
-                    android:textColor="#A0A0B5"
+                    android:textColor="@color/text_secondary"
                     android:textSize="13sp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -165,10 +165,10 @@
             android:layout_marginVertical="5dp"
             android:clickable="true"
             android:focusable="true"
-            app:cardBackgroundColor="#16161E"
+            app:cardBackgroundColor="@color/bg_card"
             app:cardCornerRadius="8dp"
             app:cardElevation="0dp"
-            app:strokeColor="#2D2D3F"
+            app:strokeColor="@color/divider"
             app:strokeWidth="1dp">
 
             <LinearLayout
@@ -182,7 +182,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-bold"
                     android:text="Default Currency"
-                    android:textColor="#F0F0F5"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp" />
 
                 <TextView
@@ -192,7 +192,86 @@
                     android:layout_marginTop="6dp"
                     android:fontFamily="sans-serif"
                     android:text="₺ (TRY)"
-                    android:textColor="#A0A0B5"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- 4.5. Canlı Döviz Kurları -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/btnCurrencyRates"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="5dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:cardBackgroundColor="@color/bg_card"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/divider"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-bold"
+                    android:text="Live Currency Exchange Rates"
+                    android:textColor="@color/text_primary"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tvCurrencyRatesSub"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:fontFamily="sans-serif"
+                    android:text="Tap to refresh rates from online"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- 4.6. Anlık Para Birimi Çevirici -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/btnCurrencyConverter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="5dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:cardBackgroundColor="@color/bg_card"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/divider"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-bold"
+                    android:text="Currency Converter Tool"
+                    android:textColor="@color/text_primary"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:fontFamily="sans-serif"
+                    android:text="Quickly convert amounts between TRY, USD, EUR, GBP"
+                    android:textColor="@color/text_secondary"
                     android:textSize="13sp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -205,10 +284,10 @@
             android:layout_marginVertical="5dp"
             android:clickable="true"
             android:focusable="true"
-            app:cardBackgroundColor="#16161E"
+            app:cardBackgroundColor="@color/bg_card"
             app:cardCornerRadius="8dp"
             app:cardElevation="0dp"
-            app:strokeColor="#2D2D3F"
+            app:strokeColor="@color/divider"
             app:strokeWidth="1dp">
 
             <LinearLayout
@@ -222,7 +301,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-bold"
                     android:text="Monthly Budget Limit"
-                    android:textColor="#F0F0F5"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp" />
 
                 <TextView
@@ -232,7 +311,7 @@
                     android:layout_marginTop="6dp"
                     android:fontFamily="sans-serif"
                     android:text="Not set (Unlimited)"
-                    android:textColor="#A0A0B5"
+                    android:textColor="@color/text_secondary"
                     android:textSize="13sp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -245,10 +324,10 @@
             android:layout_marginVertical="5dp"
             android:clickable="true"
             android:focusable="true"
-            app:cardBackgroundColor="#16161E"
+            app:cardBackgroundColor="@color/bg_card"
             app:cardCornerRadius="8dp"
             app:cardElevation="0dp"
-            app:strokeColor="#2D2D3F"
+            app:strokeColor="@color/divider"
             app:strokeWidth="1dp">
 
             <LinearLayout
@@ -262,7 +341,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-bold"
                     android:text="App Lock (Biometric / PIN)"
-                    android:textColor="#F0F0F5"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp" />
 
                 <TextView
@@ -272,7 +351,7 @@
                     android:layout_marginTop="6dp"
                     android:fontFamily="sans-serif"
                     android:text="Disabled"
-                    android:textColor="#A0A0B5"
+                    android:textColor="@color/text_secondary"
                     android:textSize="13sp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -285,10 +364,10 @@
             android:layout_marginVertical="5dp"
             android:clickable="true"
             android:focusable="true"
-            app:cardBackgroundColor="#16161E"
+            app:cardBackgroundColor="@color/bg_card"
             app:cardCornerRadius="8dp"
             app:cardElevation="0dp"
-            app:strokeColor="#2D2D3F"
+            app:strokeColor="@color/divider"
             app:strokeWidth="1dp">
 
             <LinearLayout
@@ -302,16 +381,17 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-bold"
                     android:text="App Theme"
-                    android:textColor="#F0F0F5"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp" />
 
                 <TextView
+                    android:id="@+id/tvThemeSub"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
                     android:fontFamily="sans-serif"
-                    android:text="Choose Light, Dark or System Default theme"
-                    android:textColor="#A0A0B5"
+                    android:text="System Default"
+                    android:textColor="@color/text_secondary"
                     android:textSize="13sp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -324,10 +404,10 @@
             android:layout_marginVertical="5dp"
             android:clickable="true"
             android:focusable="true"
-            app:cardBackgroundColor="#16161E"
+            app:cardBackgroundColor="@color/bg_card"
             app:cardCornerRadius="8dp"
             app:cardElevation="0dp"
-            app:strokeColor="#2D2D3F"
+            app:strokeColor="@color/divider"
             app:strokeWidth="1dp">
 
             <LinearLayout
@@ -341,7 +421,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-bold"
                     android:text="Source Code (GitHub)"
-                    android:textColor="#F0F0F5"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp" />
 
                 <TextView
@@ -350,7 +430,7 @@
                     android:layout_marginTop="6dp"
                     android:fontFamily="sans-serif"
                     android:text="View project repository on GitHub (GPL v2.0)"
-                    android:textColor="#A0A0B5"
+                    android:textColor="@color/text_secondary"
                     android:textSize="13sp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -363,10 +443,10 @@
             android:layout_marginVertical="5dp"
             android:clickable="true"
             android:focusable="true"
-            app:cardBackgroundColor="#16161E"
+            app:cardBackgroundColor="@color/bg_card"
             app:cardCornerRadius="8dp"
             app:cardElevation="0dp"
-            app:strokeColor="#2D2D3F"
+            app:strokeColor="@color/divider"
             app:strokeWidth="1dp">
 
             <LinearLayout
@@ -380,7 +460,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-bold"
                     android:text="Send Feedback &amp; Bug Report"
-                    android:textColor="#F0F0F5"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp" />
 
                 <TextView
@@ -389,7 +469,7 @@
                     android:layout_marginTop="6dp"
                     android:fontFamily="sans-serif"
                     android:text="Contact developer via email for support or ideas"
-                    android:textColor="#A0A0B5"
+                    android:textColor="@color/text_secondary"
                     android:textSize="13sp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -402,10 +482,10 @@
             android:layout_marginVertical="5dp"
             android:clickable="true"
             android:focusable="true"
-            app:cardBackgroundColor="#2A1414"
+            app:cardBackgroundColor="@color/bg_card_danger"
             app:cardCornerRadius="8dp"
             app:cardElevation="0dp"
-            app:strokeColor="#522222"
+            app:strokeColor="@color/divider_danger"
             app:strokeWidth="1dp">
 
             <LinearLayout
@@ -419,7 +499,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-bold"
                     android:text="Reset All Data"
-                    android:textColor="#FF6B6B"
+                    android:textColor="@color/text_danger"
                     android:textSize="16sp" />
 
                 <TextView
@@ -428,7 +508,7 @@
                     android:layout_marginTop="6dp"
                     android:fontFamily="sans-serif"
                     android:text="Permanently delete all subscription records"
-                    android:textColor="#DCA0A0"
+                    android:textColor="@color/text_danger_sub"
                     android:textSize="13sp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -441,10 +521,10 @@
             android:layout_marginVertical="5dp"
             android:clickable="true"
             android:focusable="true"
-            app:cardBackgroundColor="#16161E"
+            app:cardBackgroundColor="@color/bg_card"
             app:cardCornerRadius="8dp"
             app:cardElevation="0dp"
-            app:strokeColor="#2D2D3F"
+            app:strokeColor="@color/divider"
             app:strokeWidth="1dp">
 
             <LinearLayout
@@ -458,7 +538,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-bold"
                     android:text="About"
-                    android:textColor="#F0F0F5"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp" />
 
                 <TextView
@@ -467,7 +547,7 @@
                     android:layout_marginTop="6dp"
                     android:fontFamily="sans-serif"
                     android:text="Version info, license, and developer details"
-                    android:textColor="#A0A0B5"
+                    android:textColor="@color/text_secondary"
                     android:textSize="13sp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
