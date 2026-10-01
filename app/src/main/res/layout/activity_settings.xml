@@ -276,6 +276,45 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- 4.7. CSV Raporu Dışa Aktar -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/btnExportCsv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="5dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:cardBackgroundColor="@color/bg_card"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/divider"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-bold"
+                    android:text="Export Data to CSV"
+                    android:textColor="@color/text_primary"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:fontFamily="sans-serif"
+                    android:text="Download or share all subscriptions and expenses as CSV"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
         <!-- 5. Aylık Bütçe Limiti -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/btnBudgetLimit"
@@ -311,6 +350,45 @@
                     android:layout_marginTop="6dp"
                     android:fontFamily="sans-serif"
                     android:text="Not set (Unlimited)"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- 5.5. Kategori Bazlı Bütçe Limitleri -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/btnCategoryBudgets"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="5dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:cardBackgroundColor="@color/bg_card"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/divider"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-bold"
+                    android:text="Category Budget Limits"
+                    android:textColor="@color/text_primary"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:fontFamily="sans-serif"
+                    android:text="Set individual spending limits for Music, Gaming, etc."
                     android:textColor="@color/text_secondary"
                     android:textSize="13sp" />
             </LinearLayout>

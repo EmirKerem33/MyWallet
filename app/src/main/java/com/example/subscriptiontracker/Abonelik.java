@@ -20,8 +20,9 @@ public class Abonelik {
     private String billingCycle;
     private String currency; // Para birimi alanı (örn: $, ₺, €, £)
     private String paymentMethod; // Ödeme yöntemi alanı (örn: Credit Card, Debit Card, Cash)
+    private int reminderDaysBefore; // Kaç gün önce hatırlatılsın (0, 1, 2, 3, 7)
 
-    public Abonelik(@NonNull String name, String amount, String date, String category, String notes, String billingCycle, String currency, String paymentMethod) {
+    public Abonelik(@NonNull String name, String amount, String date, String category, String notes, String billingCycle, String currency, String paymentMethod, int reminderDaysBefore) {
         this.name = name;
         this.amount = amount;
         this.date = date;
@@ -30,21 +31,27 @@ public class Abonelik {
         this.billingCycle = billingCycle;
         this.currency = currency;
         this.paymentMethod = paymentMethod;
+        this.reminderDaysBefore = reminderDaysBefore;
+    }
+
+    @Ignore
+    public Abonelik(@NonNull String name, String amount, String date, String category, String notes, String billingCycle, String currency, String paymentMethod) {
+        this(name, amount, date, category, notes, billingCycle, currency, paymentMethod, 1);
     }
 
     @Ignore
     public Abonelik(@NonNull String name, String amount, String date, String category, String notes, String billingCycle, String currency) {
-        this(name, amount, date, category, notes, billingCycle, currency, "Credit Card");
+        this(name, amount, date, category, notes, billingCycle, currency, "Credit Card", 1);
     }
 
     @Ignore
     public Abonelik(@NonNull String name, String amount, String date, String category, String notes, String billingCycle) {
-        this(name, amount, date, category, notes, billingCycle, "₺", "Credit Card");
+        this(name, amount, date, category, notes, billingCycle, "₺", "Credit Card", 1);
     }
 
     @Ignore
     public Abonelik(@NonNull String name, String amount, String date, String category, String notes) {
-        this(name, amount, date, category, notes, "", "₺", "Credit Card");
+        this(name, amount, date, category, notes, "", "₺", "Credit Card", 1);
     }
 
     public int getId() { return id; }
@@ -74,6 +81,9 @@ public class Abonelik {
 
     public String getPaymentMethod() { return paymentMethod != null && !paymentMethod.isEmpty() ? paymentMethod : "Credit Card"; }
     public void setPaymentMethod(String paymentMethod) { this.paymentMethod = paymentMethod; }
+
+    public int getReminderDaysBefore() { return reminderDaysBefore; }
+    public void setReminderDaysBefore(int reminderDaysBefore) { this.reminderDaysBefore = reminderDaysBefore; }
 
     // Geriye dönük uyumluluk takma adları (Aliases)
     @NonNull
