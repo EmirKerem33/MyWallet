@@ -18,6 +18,13 @@ MyWallet is an open-source Android application designed to track and manage recu
 * **Biometric Authentication:** Enhanced data privacy securing sensitive financial records via fingerprint or facial recognition using the `BiometricPrompt` API.
 * **Offline-First Storage:** Reliable, multi-entity local data persistence powered by AndroidX Room.
 * **User Interface:** Dark and Light themed layouts built strictly with Material Design 3 specifications, utilizing explicit single-choice dialogs (`setSingleChoiceItems`) for precise user selection.
+<img width="341" height="728" alt="Ekran Görüntüsü_20261001_232231" src="https://github.com/user-attachments/assets/a276eb39-a5fc-4db8-b482-bb85392bc64e" />
+<img width="343" height="719" alt="Ekran Görüntüsü_20261001_231739" src="https://github.com/user-attachments/assets/7c6cfec8-ca80-4fc2-9b65-089f8927f59b" />
+<img width="342" height="724" alt="Ekran Görüntüsü_20261001_231334" src="https://github.com/user-attachments/assets/55fe76bc-e350-44e7-adc0-cedb27d83ef2" />
+<img width="336" height="722" alt="Ekran Görüntüsü_20261001_231025" src="https://github.com/user-attachments/assets/bafe597e-d5b7-426a-8912-4b05e9c587a6" />
+<img width="334" height="728" alt="Ekran Görüntüsü_20261001_230933" src="https://github.com/user-attachments/assets/d0132afe-0697-4726-b6ec-a933a82fa480" />
+<img width="341" height="718" alt="Ekran Görüntüsü_20261001_230726" src="https://github.com/user-attachments/assets/581c5484-db16-4406-bea3-cc4512b84b2d" />
+<img width="345" height="719" alt="Ekran Görüntüsü_20261001_230603" src="https://github.com/user-attachments/assets/f5edbab9-5d8c-4826-b041-08c2906477ca" />
 
 ## Tech Stack
 
