@@ -93,6 +93,16 @@ public class CurrencyExchangeManager {
                 return prefs.getFloat(KEY_RATE_EUR, 37.5f);
             case "£": case "GBP":
                 return prefs.getFloat(KEY_RATE_GBP, 44.5f);
+            case "₿": case "BTC":
+                return 3500000.0f;
+            case "Ξ": case "ETH":
+                return 130000.0f;
+            case "USDT":
+                return prefs.getFloat(KEY_RATE_USD, 34.0f);
+            case "CAD":
+                return prefs.getFloat(KEY_RATE_USD, 34.0f) * 0.72f;
+            case "AUD":
+                return prefs.getFloat(KEY_RATE_USD, 34.0f) * 0.65f;
             default:
                 return 1.0f;
         }

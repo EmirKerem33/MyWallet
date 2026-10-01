@@ -6,6 +6,7 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -64,10 +66,12 @@ public class MainActivity extends AppCompatActivity {
 
     private EditText etSearch;
     private ChipGroup chipGroupCategory;
+    private ChipGroup chipGroupPayment;
     private ImageButton btnSort;
 
     private String currentQuery = "";
     private String selectedCategory = "All";
+    private String selectedPaymentMethod = "All";
     private int currentSortType = 0; // 0: Default, 1: Price High-Low, 2: Price Low-High, 3: Name A-Z
 
     private void loadData() {
@@ -88,8 +92,9 @@ public class MainActivity extends AppCompatActivity {
         for (Abonelik sub : allSubscriptionList) {
             boolean matchesName = sub.getName() != null && sub.getName().toLowerCase().contains(currentQuery.toLowerCase());
             boolean matchesCategory = selectedCategory.equals("All") || (sub.getCategory() != null && sub.getCategory().equalsIgnoreCase(selectedCategory));
+            boolean matchesPayment = selectedPaymentMethod.equals("All") || (sub.getPaymentMethod() != null && sub.getPaymentMethod().equalsIgnoreCase(selectedPaymentMethod));
 
-            if (matchesName && matchesCategory) {
+            if (matchesName && matchesCategory && matchesPayment) {
                 filteredList.add(sub);
             }
         }
@@ -208,6 +213,24 @@ public class MainActivity extends AppCompatActivity {
         if (tvYaklasanOdeme != null) {
             tvYaklasanOdeme.setText(!list.isEmpty() ? "First Added: " + list.get(0).getName() : "Next: -");
         }
+
+        ProgressBar progressBar = findViewById(R.id.budgetProgressBar);
+        if (progressBar != null) {
+            if (budgetLimit > 0) {
+                progressBar.setVisibility(View.VISIBLE);
+                int progress = (int) ((totalCostInDefaultCurrency / budgetLimit) * 100);
+                progressBar.setProgress(Math.min(100, progress));
+                if (progress > 100) {
+                    progressBar.setProgressTintList(ColorStateList.valueOf(Color.parseColor("#FF5252")));
+                } else if (progress > 75) {
+                    progressBar.setProgressTintList(ColorStateList.valueOf(Color.parseColor("#FFA726")));
+                } else {
+                    progressBar.setProgressTintList(ColorStateList.valueOf(Color.parseColor("#4CD964")));
+                }
+            } else {
+                progressBar.setVisibility(View.GONE);
+            }
+        }
     }
 
     private double convertCurrency(double amount, String fromCurrency, String toCurrency) {
@@ -324,6 +347,23 @@ public class MainActivity extends AppCompatActivity {
                 }
             } else {
                 selectedCategory = "All";
+            }
+            applyFilterAndSort();
+        });
+
+        // Ödeme Yöntemi Chip Seçim Dinleyicisi
+        chipGroupPayment = findViewById(R.id.chipGroupPayment);
+        chipGroupPayment.setOnCheckedStateChangeListener((group, checkedIds) -> {
+            if (!checkedIds.isEmpty()) {
+                Chip selectedChip = group.findViewById(checkedIds.get(0));
+                if (selectedChip != null) {
+                    selectedPaymentMethod = selectedChip.getText().toString();
+                    if (selectedPaymentMethod.equals("All Methods")) {
+                        selectedPaymentMethod = "All";
+                    }
+                }
+            } else {
+                selectedPaymentMethod = "All";
             }
             applyFilterAndSort();
         });

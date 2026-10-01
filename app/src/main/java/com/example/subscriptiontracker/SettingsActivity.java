@@ -22,9 +22,15 @@ import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.content.FileProvider;
 
 import com.google.android.material.card.MaterialCardView;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -75,7 +81,9 @@ public class SettingsActivity extends AppCompatActivity {
         MaterialCardView btnDefaultCurrency = findViewById(R.id.btnDefaultCurrency);
         MaterialCardView btnCurrencyRates = findViewById(R.id.btnCurrencyRates);
         MaterialCardView btnCurrencyConverter = findViewById(R.id.btnCurrencyConverter);
+        MaterialCardView btnExportCsv = findViewById(R.id.btnExportCsv);
         MaterialCardView btnBudgetLimit = findViewById(R.id.btnBudgetLimit);
+        MaterialCardView btnCategoryBudgets = findViewById(R.id.btnCategoryBudgets);
         MaterialCardView btnAppLock = findViewById(R.id.btnAppLock);
         MaterialCardView btnThemeSettings = findViewById(R.id.btnThemeSettings);
         MaterialCardView btnGithubRepo = findViewById(R.id.btnGithubRepo);
@@ -165,8 +173,8 @@ public class SettingsActivity extends AppCompatActivity {
 
         // 4. Varsayılan Para Birimi Seçimi
         btnDefaultCurrency.setOnClickListener(v -> {
-            String[] currencyLabels = {"₺ (TRY)", "$ (USD)", "€ (EUR)", "£ (GBP)"};
-            String[] currencySymbols = {"₺", "$", "€", "£"};
+            String[] currencyLabels = {"₺ (TRY)", "$ (USD)", "€ (EUR)", "£ (GBP)", "₿ (Bitcoin)", "Ξ (Ethereum)", "USDT", "CAD", "AUD"};
+            String[] currencySymbols = {"₺", "$", "€", "£", "₿", "Ξ", "USDT", "CAD", "AUD"};
             String currentSymbol = sharedPreferences.getString(KEY_DEFAULT_CURRENCY, "₺");
             int selectedIndex = 0;
             for (int i = 0; i < currencySymbols.length; i++) {
@@ -213,7 +221,7 @@ public class SettingsActivity extends AppCompatActivity {
             etAmount.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
             cvLayout.addView(etAmount);
 
-            String[] currencies = {"TRY", "USD", "EUR", "GBP"};
+            String[] currencies = {"TRY", "USD", "EUR", "GBP", "BTC", "ETH", "USDT", "CAD", "AUD"};
             final String[] fromCurr = {"TRY"};
             final String[] toCurr = {"USD"};
 
@@ -273,6 +281,75 @@ public class SettingsActivity extends AppCompatActivity {
                     .show();
         });
 
+        // 4.7. CSV Raporu Dışa Aktar
+        btnExportCsv.setOnClickListener(v -> {
+            executor.execute(() -> {
+                AboneDatabase db = AboneDatabase.getInstance(this);
+                List<Abonelik> subs = db.aboneDao().tumunuGetir();
+                List<Income> incomes = db.incomeDao().tumGelirleriGetir();
+                List<Expense> expenses = db.expenseDao().tumGiderleriGetir();
+
+                StringBuilder csv = new StringBuilder();
+                csv.append("Type,Name/Title,Amount,Currency,Date,Category,PaymentMethod,BillingCycle,Notes\n");
+
+                if (subs != null) {
+                    for (Abonelik sub : subs) {
+                        csv.append("Subscription,").append(escapeCsv(sub.getName())).append(",")
+                                .append(sub.getAmount()).append(",").append(sub.getCurrency()).append(",")
+                                .append(sub.getDate()).append(",").append(escapeCsv(sub.getCategory())).append(",")
+                                .append(escapeCsv(sub.getPaymentMethod())).append(",")
+                                .append(escapeCsv(sub.getBillingCycle())).append(",")
+                                .append(escapeCsv(sub.getNotes())).append("\n");
+                    }
+                }
+
+                if (incomes != null) {
+                    for (Income inc : incomes) {
+                        csv.append("Income,").append(escapeCsv(inc.getTitle())).append(",")
+                                .append(inc.getAmount()).append(",").append(inc.getCurrency()).append(",")
+                                .append(inc.getDate()).append(",-, -, -,").append(escapeCsv(inc.getNotes())).append("\n");
+                    }
+                }
+
+                if (expenses != null) {
+                    for (Expense exp : expenses) {
+                        csv.append("OneoffExpense,").append(escapeCsv(exp.getTitle())).append(",")
+                                .append(exp.getAmount()).append(",").append(exp.getCurrency()).append(",")
+                                .append(exp.getDate()).append(",").append(escapeCsv(exp.getCategory())).append(",")
+                                .append(exp.getPaymentMethod()).append(",-,")
+                                .append(escapeCsv(exp.getNotes())).append("\n");
+                    }
+                }
+
+                try {
+                    File file = new File(getExternalCacheDir(), "SubscriptionTracker_Report.csv");
+                    FileWriter writer = new FileWriter(file);
+                    writer.write(csv.toString());
+                    writer.close();
+
+                    Uri uri = FileProvider.getUriForFile(
+                            this,
+                            getPackageName() + ".fileprovider",
+                            file
+                    );
+
+                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    intent.setType("text/csv");
+                    intent.putExtra(Intent.EXTRA_STREAM, uri);
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+                    runOnUiThread(() -> {
+                        startActivity(Intent.createChooser(intent, "Export CSV Report via"));
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    runOnUiThread(() -> {
+                        Toast.makeText(this, "Failed to export CSV: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+                }
+            });
+        });
+
         // 5. Aylık Bütçe Limiti
         btnBudgetLimit.setOnClickListener(v -> {
             String currSymbol = sharedPreferences.getString(KEY_DEFAULT_CURRENCY, "₺");
@@ -302,6 +379,65 @@ public class SettingsActivity extends AppCompatActivity {
                     })
                     .setNegativeButton("Cancel", null)
                     .show();
+        });
+
+        // 5.5. Kategori Bazlı Bütçe Limitleri (Dinamik + Özel Kategori Destekli)
+        btnCategoryBudgets.setOnClickListener(v -> {
+            executor.execute(() -> {
+                AboneDatabase db = AboneDatabase.getInstance(this);
+                List<Abonelik> subs = db.aboneDao().tumunuGetir();
+                List<String> categoryList = new ArrayList<>(Arrays.asList("Music", "Movies & TV", "Software & Cloud", "Gaming", "Other"));
+
+                if (subs != null) {
+                    for (Abonelik sub : subs) {
+                        String cat = sub.getCategory();
+                        if (cat != null && !cat.isEmpty() && !categoryList.contains(cat)) {
+                            categoryList.add(cat);
+                        }
+                    }
+                }
+
+                runOnUiThread(() -> {
+                    ScrollView catScroll = new ScrollView(this);
+                    LinearLayout catLayout = new LinearLayout(this);
+                    catLayout.setOrientation(LinearLayout.VERTICAL);
+                    catLayout.setPadding(50, 40, 50, 10);
+                    catScroll.addView(catLayout);
+
+                    EditText[] inputs = new EditText[categoryList.size()];
+                    for (int i = 0; i < categoryList.size(); i++) {
+                        String catName = categoryList.get(i);
+                        TextView tv = new TextView(this);
+                        tv.setText(catName + " Limit (" + sharedPreferences.getString(KEY_DEFAULT_CURRENCY, "₺") + "):");
+                        catLayout.addView(tv);
+
+                        inputs[i] = new EditText(this);
+                        inputs[i].setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                        String key = "cat_budget_" + catName.replaceAll("[^a-zA-Z0-9]", "_");
+                        float curVal = sharedPreferences.getFloat(key, 0f);
+                        if (curVal > 0) inputs[i].setText(String.valueOf(curVal));
+                        catLayout.addView(inputs[i]);
+                    }
+
+                    new AlertDialog.Builder(this)
+                            .setTitle("Category Budget Limits")
+                            .setView(catScroll)
+                            .setPositiveButton("Save", (dialog, which) -> {
+                                SharedPreferences.Editor editor = sharedPreferences.edit();
+                                for (int i = 0; i < categoryList.size(); i++) {
+                                    String catName = categoryList.get(i);
+                                    String key = "cat_budget_" + catName.replaceAll("[^a-zA-Z0-9]", "_");
+                                    String val = inputs[i].getText().toString().trim();
+                                    float limit = val.isEmpty() ? 0f : Float.parseFloat(val);
+                                    editor.putFloat(key, limit);
+                                }
+                                editor.apply();
+                                Toast.makeText(this, "Category budgets saved!", Toast.LENGTH_SHORT).show();
+                            })
+                            .setNegativeButton("Cancel", null)
+                            .show();
+                });
+            });
         });
 
         // 6. Biyometrik / Uygulama Kilidi Aç-Kapa
@@ -401,6 +537,11 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
 
+    private String escapeCsv(String val) {
+        if (val == null) return "";
+        return "\"" + val.replace("\"", "\"\"") + "\"";
+    }
+
     private void loadSavedSettings() {
         String days = sharedPreferences.getString(KEY_REMINDER_DAYS, "1 Day Before");
         int hour = sharedPreferences.getInt(KEY_REMINDER_HOUR, 9);
@@ -419,6 +560,16 @@ public class SettingsActivity extends AppCompatActivity {
             tvDefaultCurrencySub.setText("€ (EUR)");
         } else if (currency.equals("£")) {
             tvDefaultCurrencySub.setText("£ (GBP)");
+        } else if (currency.equals("₿")) {
+            tvDefaultCurrencySub.setText("₿ (Bitcoin)");
+        } else if (currency.equals("Ξ")) {
+            tvDefaultCurrencySub.setText("Ξ (Ethereum)");
+        } else if (currency.equals("USDT")) {
+            tvDefaultCurrencySub.setText("USDT");
+        } else if (currency.equals("CAD")) {
+            tvDefaultCurrencySub.setText("CAD");
+        } else if (currency.equals("AUD")) {
+            tvDefaultCurrencySub.setText("AUD");
         } else {
             tvDefaultCurrencySub.setText("₺ (TRY)");
         }
