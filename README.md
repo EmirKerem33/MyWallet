@@ -44,3 +44,10 @@ Follow these steps to set up and run the project locally:
 2. Select the version you want to download.
 3. Download the APK file.
 4. Install it on your Android device.
+
+
+[![Release](https://img.shields.io/github/v/release/kremir-dev/WalletSIOPM?color=blue&style=flat-square&logo=github)](https://github.com/kremir-dev/WalletSIOPM/releases/latest)
+
+[![Downloads](https://img.shields.io/github/downloads/kremir-dev/WalletSIOPM/total?color=green&style=flat-square&logo=github)](https://github.com/kremir-dev/WalletSIOPM/releases)
+
+[![Get it on GitHub](https://img.shields.io/badge/Get_it_on-GitHub-black?style=for-the-badge&logo=github)](https://github.com/kremir-dev/WalletSIOPM/releases/latest)
